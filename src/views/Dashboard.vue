@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="navbar">
-      <div><strong>FinGuard</strong></div>
+      <Logo :size="32" :altbaslik="false" style="color: white;" />
       <div>
         <button class="btn btn-cikis" @click="cikisYap">Cikis Yap</button>
       </div>
@@ -45,6 +45,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import Logo from '../components/Logo.vue';
 
 const islemler = ref<any[]>([]);
 const yukleniyor = ref(true);

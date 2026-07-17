@@ -1,14 +1,7 @@
 <template>
   <div class="login-sayfa">
     <div class="giris-karti">
-      <div class="logo-satiri">
-        <svg viewBox="0 0 100 100" width="32" height="32">
-          <path d="M50 5 L90 20 L90 50 Q90 80 50 95 Q10 80 10 50 L10 20 Z" fill="#1e293b"/>
-          <text x="50" y="58" text-anchor="middle" font-size="28" font-weight="bold" fill="white">FG</text>
-        </svg>
-        <span class="logo-baslik">FinGuard</span>
-        <span class="logo-altbaslik">Dolandiricilik Tespit Sistemi</span>
-      </div>
+      <Logo :size="40" style="margin-bottom: 24px;" />
 
       <h2>Analist Girisi</h2>
 
@@ -33,7 +26,15 @@
         <button type="submit" class="giris-butonu">GIRIS YAP</button>
         <p v-if="hata" class="hata-mesaj">{{ hata }}</p>
       </form>
-      <router-link to="/sifremi-unuttum" style="display: block; margin-top: 16px; font-size: 14px; text-align: center;">Sifremi mi unuttunuz?</router-link>
+      <router-link to="/sifremi-unuttum" class="unuttum-linki">Sifremi mi unuttunuz?</router-link>
+
+      <div class="guven-rozeti">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#0d9488" stroke-width="2">
+          <path d="M12 2 L20 6 L20 12 Q20 18 12 22 Q4 18 4 12 L4 6 Z" />
+          <path d="M8.5 12 L11 14.5 L15.5 9.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Guvenli baglanti, 256-bit sifreleme
+      </div>
     </div>
   </div>
 </template>
@@ -41,6 +42,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import Logo from '../components/Logo.vue';
 
 const email = ref('');
 const sifre = ref('');
@@ -75,61 +77,81 @@ async function girisYap() {
 <style scoped>
 .login-sayfa {
   min-height: 100vh;
-  background: #f1f5f9;
+  position: relative;
+  overflow: hidden;
+  background: #f7f9fb;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.login-sayfa::before,
+.login-sayfa::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  z-index: 0;
+}
+
+.login-sayfa::before {
+  width: 480px;
+  height: 480px;
+  background: rgba(13, 148, 136, 0.18);
+  top: -120px;
+  left: -100px;
+}
+
+.login-sayfa::after {
+  width: 420px;
+  height: 420px;
+  background: rgba(30, 64, 175, 0.14);
+  bottom: -100px;
+  right: -80px;
+}
+
 .giris-karti {
+  position: relative;
+  z-index: 1;
   background: white;
-  border-radius: 14px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  padding: 40px;
-  width: 360px;
-}
-
-.logo-satiri {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-}
-
-.logo-baslik {
-  font-size: 20px;
-  font-weight: 700;
-  color: #1e293b;
-}
-
-.logo-altbaslik {
-  font-size: 12px;
-  color: #94a3b8;
-  width: 100%;
-  margin-left: 42px;
+  border: 1px solid #e8ecf0;
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+  padding: 44px 40px 36px;
+  width: 380px;
 }
 
 .giris-karti h2 {
-  font-size: 18px;
-  margin-bottom: 20px;
-  color: #1e293b;
+  font-size: 19px;
+  margin-bottom: 22px;
+  color: #0f172a;
+  font-weight: 700;
 }
 
 .input-grubu {
   display: flex;
   align-items: center;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  padding: 10px 14px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 9px;
+  padding: 11px 14px;
   margin-bottom: 14px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input-grubu:focus-within {
+  border-color: #0d9488;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+  background: white;
 }
 
 .input-grubu input {
   border: none;
   outline: none;
+  background: transparent;
   flex: 1;
   font-size: 14px;
+  color: #0f172a;
 }
 
 .goz-ikon {
@@ -140,18 +162,50 @@ async function girisYap() {
 
 .giris-butonu {
   width: 100%;
-  padding: 12px;
-  background: linear-gradient(135deg, #1e293b, #0f172a);
+  padding: 13px;
+  background: linear-gradient(135deg, #0d9488, #1e40af);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 9px;
   font-weight: 600;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
   cursor: pointer;
-  margin-top: 6px;
+  margin-top: 8px;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  box-shadow: 0 8px 20px rgba(13, 148, 136, 0.25);
 }
 
 .giris-butonu:hover {
-  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(13, 148, 136, 0.32);
+}
+
+.giris-butonu:active {
+  transform: translateY(0);
+}
+
+.unuttum-linki {
+  display: block;
+  margin-top: 16px;
+  font-size: 14px;
+  text-align: center;
+  color: #475569;
+  text-decoration: none;
+}
+
+.unuttum-linki:hover {
+  color: #0d9488;
+}
+
+.guven-rozeti {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid #f1f5f9;
+  font-size: 12px;
+  color: #94a3b8;
 }
 </style>

@@ -5,31 +5,38 @@
 body {
   margin: 0;
   font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
-  background-color: #f4f6f8;
+  background-color: #f7f9fb;
   color: #1a1a1a;
 }
 
 .container {
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 28px 24px;
 }
 
 .card {
   background: white;
-  border-radius: 10px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   padding: 24px;
   margin-bottom: 20px;
 }
 
+.card h2 {
+  margin-top: 0;
+  color: #0f172a;
+}
+
 .navbar {
-  background: #1e293b;
+  background: linear-gradient(135deg, #0f172a, #1e40af);
   color: white;
-  padding: 14px 24px;
+  padding: 14px 28px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .navbar a {
@@ -44,17 +51,18 @@ body {
 }
 
 .btn {
-  background: #2563eb;
+  background: #0d9488;
   color: white;
   border: none;
   padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
+  transition: background 0.15s ease;
 }
 
 .btn:hover {
-  background: #1d4ed8;
+  background: #0f766e;
 }
 
 .btn-cikis {
@@ -77,25 +85,39 @@ table {
 }
 
 th, td {
-  padding: 10px 12px;
+  padding: 12px 14px;
   text-align: left;
   border-bottom: 1px solid #e2e8f0;
+  font-size: 14px;
 }
 
 th {
-  background: #f1f5f9;
+  background: #f8fafc;
   font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.4px;
+}
+
+tbody tr:hover {
+  background-color: #f8fafc;
 }
 
 tr.riskli {
+  background-color: #fef2f2;
+}
+
+tr.riskli:hover {
   background-color: #fee2e2;
 }
 
 .badge {
-  padding: 3px 10px;
+  padding: 4px 12px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 600;
+  display: inline-block;
 }
 
 .badge-riskli {
