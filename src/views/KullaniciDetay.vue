@@ -7,11 +7,11 @@
       </div>
     </div>
     <div class="container">
-      <router-link to="/" class="geri-linki">&larr; Kullanicilara don</router-link>
+      <router-link to="/" class="geri-linki">&larr; Musterilere don</router-link>
 
       <div class="sayfa-baslik">
-        <h1>{{ kullanici?.adSoyad || 'Kullanici' }}</h1>
-        <p>{{ kullanici?.email || '' }}</p>
+        <h1>{{ musteri?.adSoyad || 'Musteri' }}</h1>
+        <p>{{ musteri?.email || '' }}</p>
       </div>
 
       <div v-if="!yukleniyor && islemler.length > 0" class="istatistik-grid">
@@ -64,7 +64,7 @@
         <h2>Islemler</h2>
         <p v-if="yukleniyor">Yukleniyor...</p>
         <p v-if="hata" class="hata-mesaj">{{ hata }}</p>
-        <p v-if="!yukleniyor && islemler.length === 0 && !hata">Bu kullanicinin henuz islemi yok.</p>
+        <p v-if="!yukleniyor && islemler.length === 0 && !hata">Bu musterinin henuz islemi yok.</p>
         <table v-if="!yukleniyor && islemler.length > 0">
           <thead>
             <tr>
@@ -111,7 +111,7 @@ import { useRoute, useRouter } from 'vue-router';
 import Logo from '../components/Logo.vue';
 
 const islemler = ref<any[]>([]);
-const kullanici = ref<any>(null);
+const musteri = ref<any>(null);
 const yukleniyor = ref(true);
 const hata = ref('');
 const route = useRoute();
@@ -149,22 +149,22 @@ async function verileriYukle() {
     return;
   }
 
-  const kullaniciId = route.params.id;
+  const musteriId = route.params.id;
 
   try {
-    const [kullanicilarRes, islemlerRes] = await Promise.all([
-      fetch('http://localhost:3000/kullanicilar', { headers: { Authorization: `Bearer ${token}` } }),
-      fetch(`http://localhost:3000/islemler?kullaniciId=${kullaniciId}`, { headers: { Authorization: `Bearer ${token}` } }),
+    const [musterilerRes, islemlerRes] = await Promise.all([
+      fetch('http://localhost:3000/musteriler', { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`http://localhost:3000/islemler?musteriId=${musteriId}`, { headers: { Authorization: `Bearer ${token}` } }),
     ]);
 
-    if (!kullanicilarRes.ok || !islemlerRes.ok) {
+    if (!musterilerRes.ok || !islemlerRes.ok) {
       hata.value = 'Veriler yuklenemedi';
       yukleniyor.value = false;
       return;
     }
 
-    const kullanicilar = await kullanicilarRes.json();
-    kullanici.value = kullanicilar.find((k: any) => String(k.id) === String(kullaniciId));
+    const musteriler = await musterilerRes.json();
+    musteri.value = musteriler.find((m: any) => String(m.id) === String(musteriId));
 
     islemler.value = await islemlerRes.json();
   } catch (err) {

@@ -11,7 +11,7 @@ const router = createRouter({
     { path: '/login', component: Login },
     { path: '/sifremi-unuttum', component: SifremiUnuttum },
     { path: '/sifre-sifirla', component: SifreSifirla },
-    { path: '/kullanici/:id', component: KullaniciDetay },
+    { path: '/musteri/:id', component: KullaniciDetay },
     { path: '/', component: Dashboard },
   ],
 });

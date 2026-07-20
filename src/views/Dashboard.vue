@@ -8,32 +8,32 @@
     </div>
     <div class="container">
       <div class="sayfa-baslik">
-        <h1>Kullanicilar</h1>
-        <p>Incelemek istedigin kullaniciya tikla, islemlerini ve risk skorlarini gor</p>
+        <h1>Musteriler</h1>
+        <p>Incelemek istedigin musteriye tikla, islemlerini ve risk skorlarini gor</p>
       </div>
 
       <p v-if="yukleniyor">Yukleniyor...</p>
       <p v-if="hata" class="hata-mesaj">{{ hata }}</p>
 
-      <div v-if="!yukleniyor && kullanicilar.length > 0" class="kullanici-listesi">
+      <div v-if="!yukleniyor && musteriler.length > 0" class="kullanici-listesi">
         <router-link
-          v-for="kullanici in kullanicilar"
-          :key="kullanici.id"
-          :to="`/kullanici/${kullanici.id}`"
+          v-for="musteri in musteriler"
+          :key="musteri.id"
+          :to="`/musteri/${musteri.id}`"
           class="kullanici-karti"
         >
-          <div class="kullanici-avatar">{{ baslangicHarfleri(kullanici.adSoyad) }}</div>
+          <div class="kullanici-avatar">{{ baslangicHarfleri(musteri.adSoyad) }}</div>
           <div class="kullanici-bilgi">
-            <div class="kullanici-adi">{{ kullanici.adSoyad }}</div>
-            <div class="kullanici-email">{{ kullanici.email }}</div>
+            <div class="kullanici-adi">{{ musteri.adSoyad }}</div>
+            <div class="kullanici-email">{{ musteri.email }}</div>
           </div>
           <div class="kullanici-istatistik">
             <div class="mini-istatistik">
-              <span class="mini-sayi">{{ islemSayisi(kullanici.id) }}</span>
+              <span class="mini-sayi">{{ islemSayisi(musteri.id) }}</span>
               <span class="mini-etiket">islem</span>
             </div>
-            <div class="mini-istatistik" v-if="riskliSayisi(kullanici.id) > 0">
-              <span class="mini-sayi mini-riskli">{{ riskliSayisi(kullanici.id) }}</span>
+            <div class="mini-istatistik" v-if="riskliSayisi(musteri.id) > 0">
+              <span class="mini-sayi mini-riskli">{{ riskliSayisi(musteri.id) }}</span>
               <span class="mini-etiket">riskli</span>
             </div>
           </div>
@@ -43,7 +43,7 @@
         </router-link>
       </div>
 
-      <p v-if="!yukleniyor && kullanicilar.length === 0 && !hata">Henuz kayitli kullanici yok.</p>
+      <p v-if="!yukleniyor && musteriler.length === 0 && !hata">Henuz kayitli musteri yok.</p>
     </div>
   </div>
 </template>
@@ -53,25 +53,25 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import Logo from '../components/Logo.vue';
 
-const kullanicilar = ref<any[]>([]);
+const musteriler = ref<any[]>([]);
 const tumIslemler = ref<any[]>([]);
-const hesapKullaniciHaritasi = ref<Record<number, number>>({});
+const hesapMusteriHaritasi = ref<Record<number, number>>({});
 const yukleniyor = ref(true);
 const hata = ref('');
 const router = useRouter();
 
-function islemSayisi(kullaniciId: number) {
-  return tumIslemler.value.filter((i) => islemKullaniciyaAitMi(i, kullaniciId)).length;
+function islemSayisi(musteriId: number) {
+  return tumIslemler.value.filter((i) => islemMusteriyeAitMi(i, musteriId)).length;
 }
 
-function riskliSayisi(kullaniciId: number) {
-  return tumIslemler.value.filter((i) => islemKullaniciyaAitMi(i, kullaniciId) && i.riskli).length;
+function riskliSayisi(musteriId: number) {
+  return tumIslemler.value.filter((i) => islemMusteriyeAitMi(i, musteriId) && i.riskli).length;
 }
 
-function islemKullaniciyaAitMi(islem: any, kullaniciId: number) {
-  const gonderenKullaniciId = islem.hesap?.kullaniciId;
-  const aliciKullaniciId = islem.aliciHesapId ? hesapKullaniciHaritasi.value[islem.aliciHesapId] : null;
-  return gonderenKullaniciId === kullaniciId || aliciKullaniciId === kullaniciId;
+function islemMusteriyeAitMi(islem: any, musteriId: number) {
+  const gonderenMusteriId = islem.hesap?.musteriId;
+  const aliciMusteriId = islem.aliciHesapId ? hesapMusteriHaritasi.value[islem.aliciHesapId] : null;
+  return gonderenMusteriId === musteriId || aliciMusteriId === musteriId;
 }
 
 function baslangicHarfleri(adSoyad: string) {
@@ -98,27 +98,27 @@ onMounted(async () => {
   }
 
   try {
-    const [kullanicilarRes, islemlerRes, hesaplarRes] = await Promise.all([
-      fetch('http://localhost:3000/kullanicilar', { headers: { Authorization: `Bearer ${token}` } }),
+    const [musterilerRes, islemlerRes, hesaplarRes] = await Promise.all([
+      fetch('http://localhost:3000/musteriler', { headers: { Authorization: `Bearer ${token}` } }),
       fetch('http://localhost:3000/islemler', { headers: { Authorization: `Bearer ${token}` } }),
       fetch('http://localhost:3000/hesaplar', { headers: { Authorization: `Bearer ${token}` } }),
     ]);
 
-    if (!kullanicilarRes.ok || !islemlerRes.ok || !hesaplarRes.ok) {
+    if (!musterilerRes.ok || !islemlerRes.ok || !hesaplarRes.ok) {
       hata.value = 'Veriler yuklenemedi';
       yukleniyor.value = false;
       return;
     }
 
-    kullanicilar.value = await kullanicilarRes.json();
+    musteriler.value = await musterilerRes.json();
     tumIslemler.value = await islemlerRes.json();
 
     const hesaplar = await hesaplarRes.json();
     const harita: Record<number, number> = {};
     hesaplar.forEach((h: any) => {
-      harita[h.id] = h.kullaniciId;
+      harita[h.id] = h.musteriId;
     });
-    hesapKullaniciHaritasi.value = harita;
+    hesapMusteriHaritasi.value = harita;
   } catch (err) {
     hata.value = 'Sunucuya baglanilamadi';
   } finally {
