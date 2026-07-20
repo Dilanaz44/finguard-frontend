@@ -1,42 +1,61 @@
-# finguard-frontend
+# FinGuard - Frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+FinGuard'ın analist arayüzü. Analistlerin giriş yapıp müşterileri, hesapları
+ve işlemleri izlediği, riskli işlemleri incelediği panel. Backend/API ve risk
+motoru için `finguard-backend` reposuna bakın.
 
-## Recommended IDE Setup
+## Ekranlar
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- **Login / Şifremi Unuttum / Şifre Sıfırla** — sadece analistler giriş
+  yapabilir, müşteriler sisteme giremez.
+- **Dashboard** — tüm müşterilerin listesi, KPI paneli (toplam işlem,
+  bugünkü işlem, riskli oran %, bekleyen inceleme sayısı), müşteri adı/email
+  veya `#hesapNumarasi` ile global arama.
+- **Müşteri Detayı** — o müşteriye ait tüm işlemler; her satırda Gönderen ve
+  Alıcı (isim + maskelenmiş hesap numarası), risk skoru, filtreleme
+  (risk/durum/hedef) ve arama (`#` ile hesap numarası, önek olmadan tutar),
+  sıralama. Bir işlemin üzerine tıklayınca risk motorunun o skoru neden
+  verdiğini gösteren açıklama listesi ve analistin durum/not girebileceği
+  inceleme formu açılır.
 
-## Recommended Browser Setup
+### Klavye kısayolları (müşteri detay sayfasında)
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+- `↓` / `↑` — işlemler arasında gez
+- `Enter` — açık işlemin inceleme durumunu/notunu kaydet
+- Not yazarken `Cmd/Ctrl + Enter` — kaydet
 
-## Type Support for `.vue` Imports in TS
+## Kurulum
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
+```bash
 npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+Backend'in (`finguard-backend`) `http://localhost:3000` adresinde ayrıca
+çalışıyor olması gerekir.
 
-```sh
+### Production build
+
+```bash
 npm run build
 ```
+
+Bu komut önce `vue-tsc --build` ile tip kontrolü yapar, sonra Vite ile
+derler. `npm run dev` tip hatalarını göstermez, bu yüzden bir değişiklik
+`npm run dev`'de sorunsuz görünse bile `npm run build`'de hataya neden
+olabilir — build'i ayrıca çalıştırmak faydalıdır.
+
+## Docker ile çalıştırma
+
+Bu repo, `finguard-backend` içindeki `docker-compose.yml` tarafından
+otomatik build edilir (backend ile aynı üst klasörde durması gerekir).
+Detaylar için backend reposunun README'sine bakın.
+
+`nginx.conf`, Vue Router'ın history modu için gerekli SPA fallback'i
+(`try_files ... /index.html`) sağlar.
+
+## CI
+
+`.github/workflows/ci.yml`, her push/PR'da bağımlılıkları kurar, `npm run
+build` ile tip kontrolü + derlemeyi doğrular ve Docker imajının başarıyla
+build olduğunu kontrol eder.
