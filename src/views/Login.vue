@@ -26,7 +26,7 @@
         <button type="submit" class="giris-butonu">GIRIS YAP</button>
         <p v-if="hata" class="hata-mesaj">{{ hata }}</p>
       </form>
-      <router-link to="/sifremi-unuttum" class="unuttum-linki">Sifremi mi unuttunuz?</router-link>
+      <router-link to="/sifremi-unuttum" class="unuttum-linki">Sifremi Unuttum</router-link>
 
       <div class="guven-rozeti">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#0d9488" stroke-width="2">

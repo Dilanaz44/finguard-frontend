@@ -74,30 +74,69 @@
               <th>Hedef</th>
               <th>Risk Skoru</th>
               <th>Riskli mi</th>
+              <th>Durum</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="islem in islemler" :key="islem.id" :class="{ riskli: islem.riskli }">
-              <td>#{{ islem.hesapId }}</td>
-              <td class="tutar-hucre">{{ formatTutar(islem.tutar) }}</td>
-              <td>{{ islem.paraBirimi }}</td>
-              <td>
-                <span class="hedef-etiket" :class="islem.hedefUlke === 'yurt_disi' ? 'hedef-disi' : 'hedef-ici'">
-                  {{ islem.hedefUlke === 'yurt_disi' ? 'Yurt Disi' : 'Yurt Ici' }}
-                </span>
-              </td>
-              <td>
-                <div class="risk-cubugu">
-                  <div class="risk-dolgu" :style="{ width: islem.riskSkoru + '%' }" :class="{ 'risk-yuksek': islem.riskli }"></div>
-                </div>
-                <span class="risk-sayi">{{ islem.riskSkoru }}</span>
-              </td>
-              <td>
-                <span class="badge" :class="islem.riskli ? 'badge-riskli' : 'badge-normal'">
-                  {{ islem.riskli ? 'Evet' : 'Hayir' }}
-                </span>
-              </td>
-            </tr>
+            <template v-for="islem in islemler" :key="islem.id">
+              <tr class="tiklanabilir" :class="{ riskli: islem.riskli }" @click="detayAcKapa(islem)">
+                <td>#{{ islem.hesapId }}</td>
+                <td class="tutar-hucre">{{ formatTutar(islem.tutar) }}</td>
+                <td>{{ islem.paraBirimi }}</td>
+                <td>
+                  <span class="hedef-etiket" :class="islem.hedefUlke === 'yurt_disi' ? 'hedef-disi' : 'hedef-ici'">
+                    {{ islem.hedefUlke === 'yurt_disi' ? 'Yurt Disi' : 'Yurt Ici' }}
+                  </span>
+                </td>
+                <td>
+                  <div class="risk-cubugu">
+                    <div class="risk-dolgu" :style="{ width: islem.riskSkoru + '%' }" :class="{ 'risk-yuksek': islem.riskli }"></div>
+                  </div>
+                  <span class="risk-sayi">
+                    {{ islem.riskSkoru }}
+                    <span v-if="islem.riskNedenleri && islem.riskNedenleri.length" class="risk-bilgi-ikon">ⓘ</span>
+                  </span>
+                </td>
+                <td>
+                  <span class="badge" :class="islem.riskli ? 'badge-riskli' : 'badge-normal'">
+                    {{ islem.riskli ? 'Evet' : 'Hayir' }}
+                  </span>
+                </td>
+                <td>
+                  <span class="durum-etiket" :class="'durum-' + islem.incelemeDurumu">{{ durumEtiketMetni(islem.incelemeDurumu) }}</span>
+                </td>
+              </tr>
+              <tr v-if="acikNedenId === islem.id" class="neden-satiri">
+                <td colspan="7">
+                  <div v-if="islem.riskNedenleri && islem.riskNedenleri.length">
+                    <strong>Risk skoruna sebep olan kurallar:</strong>
+                    <ul>
+                      <li v-for="(neden, i) in islem.riskNedenleri" :key="i">{{ neden }}</li>
+                    </ul>
+                  </div>
+                  <div v-else>Bu islem icin hicbir risk kurali tetiklenmedi.</div>
+
+                  <div class="inceleme-formu">
+                    <strong>Inceleme</strong>
+                    <div class="inceleme-satiri">
+                      <label>Durum:</label>
+                      <select v-model="duzenlemeDurum">
+                        <option value="yeni">Yeni</option>
+                        <option value="inceleniyor">Inceleniyor</option>
+                        <option value="kapatildi">Kapatildi</option>
+                      </select>
+                    </div>
+                    <textarea v-model="duzenlemeNot" placeholder="Analist notu ekle..." rows="3"></textarea>
+                    <button class="btn btn-kaydet" @click.stop="notKaydet(islem)" :disabled="kaydediliyor">
+                      {{ kaydediliyor ? 'Kaydediliyor...' : 'Kaydet' }}
+                    </button>
+                    <p v-if="islem.incelemeAnalist" class="inceleme-bilgi">
+                      Son inceleme: {{ islem.incelemeAnalist.adSoyad }} ({{ formatTarih(islem.incelemeTarihi) }})
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            </template>
           </tbody>
         </table>
       </div>
@@ -114,8 +153,73 @@ const islemler = ref<any[]>([]);
 const musteri = ref<any>(null);
 const yukleniyor = ref(true);
 const hata = ref('');
+const acikNedenId = ref<number | null>(null);
+const duzenlemeDurum = ref('yeni');
+const duzenlemeNot = ref('');
+const kaydediliyor = ref(false);
 const route = useRoute();
 const router = useRouter();
+
+function detayAcKapa(islem: any) {
+  if (acikNedenId.value === islem.id) {
+    acikNedenId.value = null;
+    return;
+  }
+  acikNedenId.value = islem.id;
+  duzenlemeDurum.value = islem.incelemeDurumu || 'yeni';
+  duzenlemeNot.value = islem.analistNotu || '';
+}
+
+function durumEtiketMetni(durum: string) {
+  if (durum === 'inceleniyor') return 'Inceleniyor';
+  if (durum === 'kapatildi') return 'Kapatildi';
+  return 'Yeni';
+}
+
+function formatTarih(tarih: string) {
+  if (!tarih) return '';
+  return new Date(tarih).toLocaleString('tr-TR');
+}
+
+async function notKaydet(islem: any) {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    router.push('/login');
+    return;
+  }
+
+  kaydediliyor.value = true;
+
+  try {
+    const response = await fetch(`http://localhost:3000/islemler/${islem.id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        incelemeDurumu: duzenlemeDurum.value,
+        analistNotu: duzenlemeNot.value,
+      }),
+    });
+
+    if (!response.ok) {
+      hata.value = 'Inceleme kaydedilemedi';
+      return;
+    }
+
+    const guncellenenIslem = await response.json();
+
+    const index = islemler.value.findIndex((i) => i.id === islem.id);
+    if (index !== -1) {
+      islemler.value[index] = { ...islemler.value[index], ...guncellenenIslem };
+    }
+  } catch (err) {
+    hata.value = 'Sunucuya baglanilamadi';
+  } finally {
+    kaydediliyor.value = false;
+  }
+}
 
 const toplamIslem = computed(() => islemler.value.length);
 const riskliSayisi = computed(() => islemler.value.filter((i) => i.riskli).length);
@@ -313,6 +417,99 @@ watch(() => route.params.id, verileriYukle);
   font-size: 13px;
   color: #475569;
   vertical-align: middle;
+}
+
+.risk-bilgi-ikon {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+tr.tiklanabilir {
+  cursor: pointer;
+}
+
+tr.neden-satiri td {
+  background: #f8fafc;
+  padding: 12px 14px 14px 14px;
+  font-size: 13px;
+  color: #334155;
+}
+
+tr.neden-satiri ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+tr.neden-satiri li {
+  margin-bottom: 4px;
+}
+
+.durum-etiket {
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-weight: 500;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.durum-inceleniyor {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.durum-kapatildi {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.inceleme-formu {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.inceleme-satiri {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.inceleme-satiri select {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+.inceleme-formu textarea {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  resize: vertical;
+}
+
+.btn-kaydet {
+  margin-top: 8px;
+  background: #0d9488;
+}
+
+.btn-kaydet:hover {
+  background: #0f766e;
+}
+
+.btn-kaydet:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.inceleme-bilgi {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: #94a3b8;
 }
 
 @media (max-width: 800px) {

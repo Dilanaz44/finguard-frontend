@@ -1,7 +1,7 @@
 <template>
   <div class="login-sayfa">
     <div class="giris-karti">
-      <h2>Yeni Sifre Belirle</h2>
+      <h2>Sifre Sifirla</h2>
       <form @submit.prevent="sifirla">
         <div class="input-grubu">
           <input v-model="yeniSifre" type="password" placeholder="Yeni Sifre" required />
