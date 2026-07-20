@@ -1,0 +1,29 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Kodu indir
+        uses: actions/checkout@v4
+
+      - name: Node.js kur
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Bagimliliklari kur
+        run: npm ci
+
+      - name: Projeyi build et (derlenebiliyor mu kontrol)
+        run: npm run build
+
+      - name: Docker image build edilebiliyor mu kontrol et
+        run: docker build -t finguard-frontend .

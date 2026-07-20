@@ -209,8 +209,9 @@ onMounted(async () => {
     hesaplar.forEach((h: any) => {
       harita[h.id] = h.musteriId;
       if (h.hesapNumarasi) {
-        if (!hesapNumaralariHaritasi[h.musteriId]) hesapNumaralariHaritasi[h.musteriId] = [];
-        hesapNumaralariHaritasi[h.musteriId].push(h.hesapNumarasi);
+        const mevcutListe = hesapNumaralariHaritasi[h.musteriId] || [];
+        mevcutListe.push(h.hesapNumarasi);
+        hesapNumaralariHaritasi[h.musteriId] = mevcutListe;
       }
     });
     hesapMusteriHaritasi.value = harita;
