@@ -62,13 +62,54 @@
 
       <div class="card">
         <h2>Islemler</h2>
-        <p v-if="yukleniyor">Yukleniyor...</p>
+        <div v-if="yukleniyor" class="yukleniyor-satiri"><span class="spinner"></span> Yukleniyor...</div>
         <p v-if="hata" class="hata-mesaj">{{ hata }}</p>
         <p v-if="!yukleniyor && islemler.length === 0 && !hata">Bu musterinin henuz islemi yok.</p>
-        <table v-if="!yukleniyor && islemler.length > 0">
+
+        <div v-if="!yukleniyor && islemler.length > 0" class="filtre-cubugu">
+          <input
+            v-model="aramaMetni"
+            type="text"
+            class="arama-kutusu"
+            placeholder="Tutar ara (orn: 500) veya #5678 ile hesap numarasinin son haneleriyle ara"
+          />
+          <select v-model="riskliFiltre">
+            <option value="hepsi">Riskli mi: Hepsi</option>
+            <option value="evet">Sadece riskli</option>
+            <option value="hayir">Sadece riskli olmayan</option>
+          </select>
+          <select v-model="hedefFiltre">
+            <option value="hepsi">Hedef: Hepsi</option>
+            <option value="yurt_ici">Yurt Ici</option>
+            <option value="yurt_disi">Yurt Disi</option>
+          </select>
+          <select v-model="durumFiltre">
+            <option value="hepsi">Durum: Hepsi</option>
+            <option value="yeni">Yeni</option>
+            <option value="inceleniyor">Inceleniyor</option>
+            <option value="kapatildi">Kapatildi</option>
+          </select>
+          <select v-model="siralama">
+            <option value="tarih-yeni">Sirala: En yeni</option>
+            <option value="risk-yuksek">Sirala: Risk skoru (yuksek -> dusuk)</option>
+            <option value="tutar-yuksek">Sirala: Tutar (yuksek -> dusuk)</option>
+          </select>
+        </div>
+
+        <p v-if="!yukleniyor && islemler.length > 0" class="kisayol-ipucu">
+          Ipucu: <kbd>↓</kbd> / <kbd>↑</kbd> ile islemler arasinda gezin, <kbd>Enter</kbd> ile kaydet
+          (not yazarken <kbd>⌘/Ctrl+Enter</kbd> kullan).
+        </p>
+
+        <p v-if="!yukleniyor && islemler.length > 0 && siraliIslemler.length === 0" class="filtre-sonuc-yok">
+          Filtreye uyan islem bulunamadi.
+        </p>
+
+        <table v-if="!yukleniyor && siraliIslemler.length > 0">
           <thead>
             <tr>
-              <th>Hesap ID</th>
+              <th>Gonderen</th>
+              <th>Alici</th>
               <th>Tutar</th>
               <th>Para Birimi</th>
               <th>Hedef</th>
@@ -78,9 +119,10 @@
             </tr>
           </thead>
           <tbody>
-            <template v-for="islem in islemler" :key="islem.id">
+            <template v-for="islem in siraliIslemler" :key="islem.id">
               <tr class="tiklanabilir" :class="{ riskli: islem.riskli }" @click="detayAcKapa(islem)">
-                <td>#{{ islem.hesapId }}</td>
+                <td class="hesap-no-hucre">{{ gonderenGoster(islem) }}</td>
+                <td class="hesap-no-hucre">{{ aliciGoster(islem) }}</td>
                 <td class="tutar-hucre">{{ formatTutar(islem.tutar) }}</td>
                 <td>{{ islem.paraBirimi }}</td>
                 <td>
@@ -107,7 +149,7 @@
                 </td>
               </tr>
               <tr v-if="acikNedenId === islem.id" class="neden-satiri">
-                <td colspan="7">
+                <td colspan="8">
                   <div v-if="islem.riskNedenleri && islem.riskNedenleri.length">
                     <strong>Risk skoruna sebep olan kurallar:</strong>
                     <ul>
@@ -130,6 +172,7 @@
                     <button class="btn btn-kaydet" @click.stop="notKaydet(islem)" :disabled="kaydediliyor">
                       {{ kaydediliyor ? 'Kaydediliyor...' : 'Kaydet' }}
                     </button>
+                    <span v-if="kaydetMesaji[islem.id]" class="kaydet-onay">{{ kaydetMesaji[islem.id] }}</span>
                     <p v-if="islem.incelemeAnalist" class="inceleme-bilgi">
                       Son inceleme: {{ islem.incelemeAnalist.adSoyad }} ({{ formatTarih(islem.incelemeTarihi) }})
                     </p>
@@ -145,30 +188,123 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import Logo from '../components/Logo.vue';
 
 const islemler = ref<any[]>([]);
 const musteri = ref<any>(null);
+const hesapHaritasi = ref<Record<number, any>>({});
 const yukleniyor = ref(true);
 const hata = ref('');
 const acikNedenId = ref<number | null>(null);
 const duzenlemeDurum = ref('yeni');
 const duzenlemeNot = ref('');
 const kaydediliyor = ref(false);
+const aramaMetni = ref('');
+const riskliFiltre = ref('hepsi');
+const hedefFiltre = ref('hepsi');
+const durumFiltre = ref('hepsi');
+const siralama = ref('tarih-yeni');
+const kaydetMesaji = ref<Record<number, string>>({});
 const route = useRoute();
 const router = useRouter();
+
+const filtrelenmisIslemler = computed(() => {
+  return islemler.value.filter((islem) => {
+    if (riskliFiltre.value === 'evet' && !islem.riskli) return false;
+    if (riskliFiltre.value === 'hayir' && islem.riskli) return false;
+    if (hedefFiltre.value !== 'hepsi' && islem.hedefUlke !== hedefFiltre.value) return false;
+    if (durumFiltre.value !== 'hepsi' && islem.incelemeDurumu !== durumFiltre.value) return false;
+
+    const arama = aramaMetni.value.trim().toLowerCase();
+    if (arama) {
+      if (arama.startsWith('#')) {
+        // Basinda # varsa hesap numarasinin son hanelerinde ara (ekranda gorunen kisim).
+        const aranilan = arama.slice(1);
+        const hesapNo = islem.hesap?.hesapNumarasi || String(islem.hesapId);
+        if (!hesapNo.toLowerCase().includes(aranilan)) return false;
+      } else {
+        // Duz sayi yazildiysa sadece tutarda ara.
+        if (!String(islem.tutar).includes(arama)) return false;
+      }
+    }
+
+    return true;
+  });
+});
+
+const siraliIslemler = computed(() => {
+  const liste = [...filtrelenmisIslemler.value];
+
+  if (siralama.value === 'risk-yuksek') {
+    liste.sort((a, b) => (b.riskSkoru || 0) - (a.riskSkoru || 0));
+  } else if (siralama.value === 'tutar-yuksek') {
+    liste.sort((a, b) => Number(b.tutar) - Number(a.tutar));
+  } else {
+    liste.sort((a, b) => new Date(b.olusturmaTarihi).getTime() - new Date(a.olusturmaTarihi).getTime());
+  }
+
+  return liste;
+});
 
 function detayAcKapa(islem: any) {
   if (acikNedenId.value === islem.id) {
     acikNedenId.value = null;
     return;
   }
+  satiriAc(islem);
+}
+
+function satiriAc(islem: any) {
   acikNedenId.value = islem.id;
   duzenlemeDurum.value = islem.incelemeDurumu || 'yeni';
   duzenlemeNot.value = islem.analistNotu || '';
 }
+
+// Klavye kisayollari: asagi/yukari ok tuslariyla islemler arasinda gezinme.
+// Analist fareyle tek tek tiklamak yerine listede hizlica ilerleyebilir.
+function klavyeDinleyici(e: KeyboardEvent) {
+  const hedef = e.target as HTMLElement;
+  const yaziYaziliyor = ['INPUT', 'TEXTAREA', 'SELECT'].includes(hedef.tagName);
+
+  // Cmd/Ctrl+Enter: not yazarken (textarea icindeyken) bile calissin, hizlica kaydetsin.
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && acikNedenId.value !== null) {
+    e.preventDefault();
+    const acikIslem = siraliIslemler.value.find((i) => i.id === acikNedenId.value);
+    if (acikIslem) notKaydet(acikIslem);
+    return;
+  }
+
+  if (yaziYaziliyor) return; // arama kutusunda/notta yazarken diger kisayollari devre disi birak
+
+  const liste = siraliIslemler.value;
+  if (liste.length === 0) return;
+
+  const suankiIndex = liste.findIndex((i) => i.id === acikNedenId.value);
+
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    const sonrakiIndex = suankiIndex === -1 ? 0 : Math.min(suankiIndex + 1, liste.length - 1);
+    satiriAc(liste[sonrakiIndex]);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    const oncekiIndex = suankiIndex === -1 ? 0 : Math.max(suankiIndex - 1, 0);
+    satiriAc(liste[oncekiIndex]);
+  } else if (e.key === 'Enter' && acikNedenId.value !== null) {
+    e.preventDefault();
+    const acikIslem = liste.find((i) => i.id === acikNedenId.value);
+    if (acikIslem) notKaydet(acikIslem);
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', klavyeDinleyici);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', klavyeDinleyici);
+});
 
 function durumEtiketMetni(durum: string) {
   if (durum === 'inceleniyor') return 'Inceleniyor';
@@ -214,6 +350,11 @@ async function notKaydet(islem: any) {
     if (index !== -1) {
       islemler.value[index] = { ...islemler.value[index], ...guncellenenIslem };
     }
+
+    kaydetMesaji.value[islem.id] = 'Kaydedildi ✓';
+    setTimeout(() => {
+      delete kaydetMesaji.value[islem.id];
+    }, 3000);
   } catch (err) {
     hata.value = 'Sunucuya baglanilamadi';
   } finally {
@@ -237,6 +378,34 @@ function formatTutar(tutar: number) {
   return Number(tutar).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+function numarayiMaskele(numara: string | null | undefined, yedekId: number) {
+  if (!numara) {
+    // Eski hesap (hesap numarasi ozelligi eklenmeden once acilmis), eski gosterime don.
+    return `#${yedekId}`;
+  }
+  // TR330006400000112345678901 -> TR33 **** **** **** 8901
+  const basi = numara.slice(0, 4);
+  const sonu = numara.slice(-4);
+  return `${basi} **** **** **** ${sonu}`;
+}
+
+function gonderenGoster(islem: any) {
+  const ad = islem.hesap?.musteri?.adSoyad || 'Bilinmiyor';
+  const numara = numarayiMaskele(islem.hesap?.hesapNumarasi, islem.hesapId);
+  return `${ad} (${numara})`;
+}
+
+function aliciGoster(islem: any) {
+  if (!islem.aliciHesapId) return '-';
+
+  const aliciHesap = hesapHaritasi.value[islem.aliciHesapId];
+  if (!aliciHesap) return `#${islem.aliciHesapId}`;
+
+  const ad = aliciHesap.musteri?.adSoyad || 'Bilinmiyor';
+  const numara = numarayiMaskele(aliciHesap.hesapNumarasi, islem.aliciHesapId);
+  return `${ad} (${numara})`;
+}
+
 function cikisYap() {
   localStorage.removeItem('token');
   router.push('/login');
@@ -256,12 +425,13 @@ async function verileriYukle() {
   const musteriId = route.params.id;
 
   try {
-    const [musterilerRes, islemlerRes] = await Promise.all([
+    const [musterilerRes, islemlerRes, hesaplarRes] = await Promise.all([
       fetch('http://localhost:3000/musteriler', { headers: { Authorization: `Bearer ${token}` } }),
       fetch(`http://localhost:3000/islemler?musteriId=${musteriId}`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch('http://localhost:3000/hesaplar', { headers: { Authorization: `Bearer ${token}` } }),
     ]);
 
-    if (!musterilerRes.ok || !islemlerRes.ok) {
+    if (!musterilerRes.ok || !islemlerRes.ok || !hesaplarRes.ok) {
       hata.value = 'Veriler yuklenemedi';
       yukleniyor.value = false;
       return;
@@ -271,6 +441,13 @@ async function verileriYukle() {
     musteri.value = musteriler.find((m: any) => String(m.id) === String(musteriId));
 
     islemler.value = await islemlerRes.json();
+
+    const hesaplar = await hesaplarRes.json();
+    const harita: Record<number, any> = {};
+    hesaplar.forEach((h: any) => {
+      harita[h.id] = h;
+    });
+    hesapHaritasi.value = harita;
   } catch (err) {
     hata.value = 'Sunucuya baglanilamadi';
   } finally {
@@ -374,6 +551,13 @@ watch(() => route.params.id, verileriYukle);
   font-weight: 500;
 }
 
+.hesap-no-hucre {
+  font-family: 'SF Mono', 'Menlo', monospace;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+  color: #475569;
+}
+
 .hedef-etiket {
   font-size: 12px;
   padding: 3px 10px;
@@ -458,6 +642,51 @@ tr.neden-satiri li {
   color: #92400e;
 }
 
+.filtre-cubugu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.arama-kutusu {
+  flex: 1;
+  min-width: 200px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+.filtre-cubugu select {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 13px;
+  background: white;
+}
+
+.filtre-sonuc-yok {
+  color: #64748b;
+  font-size: 14px;
+  padding: 12px 0;
+}
+
+.kisayol-ipucu {
+  color: #94a3b8;
+  font-size: 12px;
+  margin: 0 0 12px;
+}
+
+.kisayol-ipucu kbd {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  font-size: 11px;
+}
+
 .durum-kapatildi {
   background: #dcfce7;
   color: #166534;
@@ -504,6 +733,36 @@ tr.neden-satiri li {
 .btn-kaydet:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.kaydet-onay {
+  margin-left: 10px;
+  color: #166534;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.yukleniyor-satiri {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #cbd5e1;
+  border-top-color: #0d9488;
+  border-radius: 50%;
+  animation: spinner-donme 0.7s linear infinite;
+}
+
+@keyframes spinner-donme {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .inceleme-bilgi {
