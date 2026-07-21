@@ -9,9 +9,12 @@
     <div class="container">
       <router-link to="/" class="geri-linki">&larr; Musterilere don</router-link>
 
-      <div class="sayfa-baslik">
-        <h1>{{ musteri?.adSoyad || 'Musteri' }}</h1>
-        <p>{{ musteri?.email || '' }}</p>
+      <div class="sayfa-baslik" style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <h1>{{ musteri?.adSoyad || 'Musteri' }}</h1>
+          <p>{{ musteri?.email || '' }}</p>
+        </div>
+        <button v-if="!yukleniyor && islemler.length > 0" class="btn" @click="csvIndir">CSV Indir</button>
       </div>
 
       <div v-if="!yukleniyor && islemler.length > 0" class="istatistik-grid">
@@ -409,6 +412,27 @@ function aliciGoster(islem: any) {
 function cikisYap() {
   localStorage.removeItem('token');
   router.push('/login');
+}
+
+async function csvIndir() {
+  const token = localStorage.getItem('token');
+  const musteriId = route.params.id;
+
+  try {
+    const response = await fetch(`http://localhost:3000/islemler/export?musteriId=${musteriId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `islemler-${musteriId}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    hata.value = 'CSV indirilemedi';
+  }
 }
 
 async function verileriYukle() {

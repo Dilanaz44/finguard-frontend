@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import AuditLog from '../views/AuditLog.vue';
 import Login from '../views/Login.vue';
 import Dashboard from '../views/Dashboard.vue';
 import KullaniciDetay from '../views/KullaniciDetay.vue';
@@ -8,6 +9,7 @@ import SifreSifirla from '../views/SifreSifirla.vue';
 const router = createRouter({
   history: createWebHistory(),
   routes: [
+    { path: '/audit-log', component: AuditLog },
     { path: '/login', component: Login },
     { path: '/sifremi-unuttum', component: SifremiUnuttum },
     { path: '/sifre-sifirla', component: SifreSifirla },

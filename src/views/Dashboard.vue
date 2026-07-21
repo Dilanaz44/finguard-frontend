@@ -3,6 +3,8 @@
     <div class="navbar">
       <Logo :size="32" :altbaslik="false" style="color: white;" />
       <div>
+        <span style="color: white; margin-right: 12px;">{{ rol }}</span>
+        <router-link v-if="rol === 'kidemli_analist'" to="/audit-log" class="btn btn-cikis" style="text-decoration: none; margin-right: 10px;">Denetim Izi</router-link>
         <button class="btn btn-cikis" @click="cikisYap">Cikis Yap</button>
       </div>
     </div>
@@ -102,6 +104,7 @@ const hesapMusteriHaritasi = ref<Record<number, number>>({});
 const yukleniyor = ref(true);
 const hata = ref('');
 const router = useRouter();
+const rol = localStorage.getItem('rol');
 
 function islemSayisi(musteriId: number) {
   return tumIslemler.value.filter((i) => islemMusteriyeAitMi(i, musteriId)).length;
