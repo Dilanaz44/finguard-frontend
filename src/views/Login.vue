@@ -68,6 +68,7 @@ async function girisYap() {
 
     localStorage.setItem('token', veri.token);
     localStorage.setItem('rol', veri.rol);
+    localStorage.setItem('adSoyad', veri.adSoyad);
     router.push('/');
   } catch (err) {
     hata.value = 'Sunucuya baglanilamadi';

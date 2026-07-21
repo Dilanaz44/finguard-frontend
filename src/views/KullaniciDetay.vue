@@ -1,11 +1,61 @@
 <template>
-  <div>
-    <div class="navbar">
-      <Logo :size="32" :altbaslik="false" style="color: white;" />
-      <div>
-        <button class="btn btn-cikis" @click="cikisYap">Cikis Yap</button>
+  <div class="uygulama-govde">
+    <aside class="kenar-menu" :class="{ 'kenar-menu-daraltilmis': daraltilmis }">
+      <div class="kenar-menu-baslik-satiri">
+        <Logo :size="26" :altbaslik="false" :icon-only="daraltilmis" />
+        <button
+          class="kenar-menu-daralt-buton"
+          @click="daraltilmis = !daraltilmis"
+          :aria-label="daraltilmis ? 'Menuyu ac' : 'Menuyu kapat'"
+        >
+          <svg v-if="!daraltilmis" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 6l-6 6 6 6" />
+          </svg>
+          <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 6l6 6-6 6" />
+          </svg>
+        </button>
       </div>
-    </div>
+      <div v-if="!daraltilmis" class="kenar-menu-etiket">Menu</div>
+      <nav class="kenar-menu-nav">
+        <router-link to="/" class="kenar-menu-link" :title="daraltilmis ? 'Musteriler' : undefined">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <path d="M9 22V12h6v10" />
+          </svg>
+          <span v-if="!daraltilmis">Musteriler</span>
+        </router-link>
+        <router-link
+          v-if="rol === 'kidemli_analist'"
+          to="/audit-log"
+          class="kenar-menu-link"
+          :title="daraltilmis ? 'Denetim Izi' : undefined"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 8v4l3 3" />
+            <circle cx="12" cy="12" r="9" />
+          </svg>
+          <span v-if="!daraltilmis">Denetim Izi</span>
+        </router-link>
+      </nav>
+      <div class="kenar-menu-spacer"></div>
+      <div class="kenar-menu-kullanici">
+        <div class="kenar-menu-avatar">{{ baslangicHarfleri(adSoyad) }}</div>
+        <div v-if="!daraltilmis">
+          <div class="kenar-menu-isim">{{ adSoyad }}</div>
+          <div class="kenar-menu-rol">{{ rolEtiketi }}</div>
+        </div>
+      </div>
+      <button class="btn btn-cikis kenar-menu-cikis" @click="cikisYap" :title="daraltilmis ? 'Cikis Yap' : undefined">
+        <span v-if="!daraltilmis">Cikis Yap</span>
+        <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <path d="M16 17l5-5-5-5" />
+          <path d="M21 12H9" />
+        </svg>
+      </button>
+    </aside>
+    <main class="ana-icerik">
     <div class="container">
       <router-link to="/" class="geri-linki">&larr; Musterilere don</router-link>
 
@@ -69,6 +119,19 @@
         <p v-if="hata" class="hata-mesaj">{{ hata }}</p>
         <p v-if="!yukleniyor && islemler.length === 0 && !hata">Bu musterinin henuz islemi yok.</p>
 
+        <div v-if="!yukleniyor && islemler.length > 0" class="kuyruk-sekmeler">
+          <button
+            v-for="sekme in kuyrukSekmeleri"
+            :key="sekme.deger"
+            type="button"
+            class="kuyruk-sekme"
+            :class="{ 'kuyruk-sekme-aktif': durumFiltre === sekme.deger }"
+            @click="durumFiltre = sekme.deger"
+          >
+            {{ sekme.etiket }} ({{ sekme.sayi }})
+          </button>
+        </div>
+
         <div v-if="!yukleniyor && islemler.length > 0" class="filtre-cubugu">
           <input
             v-model="aramaMetni"
@@ -85,12 +148,6 @@
             <option value="hepsi">Hedef: Hepsi</option>
             <option value="yurt_ici">Yurt Ici</option>
             <option value="yurt_disi">Yurt Disi</option>
-          </select>
-          <select v-model="durumFiltre">
-            <option value="hepsi">Durum: Hepsi</option>
-            <option value="yeni">Yeni</option>
-            <option value="inceleniyor">Inceleniyor</option>
-            <option value="kapatildi">Kapatildi</option>
           </select>
           <select v-model="siralama">
             <option value="tarih-yeni">Sirala: En yeni</option>
@@ -187,6 +244,7 @@
         </table>
       </div>
     </div>
+    </main>
   </div>
 </template>
 
@@ -212,6 +270,40 @@ const siralama = ref('tarih-yeni');
 const kaydetMesaji = ref<Record<number, string>>({});
 const route = useRoute();
 const router = useRouter();
+const rol = localStorage.getItem('rol');
+const adSoyad = localStorage.getItem('adSoyad') || '';
+const rolEtiketi = computed(() => (rol === 'kidemli_analist' ? 'Kidemli Analist' : 'Analist'));
+const daraltilmis = ref(localStorage.getItem('kenarMenuDaraltilmis') === 'true');
+watch(daraltilmis, (deger) => {
+  localStorage.setItem('kenarMenuDaraltilmis', String(deger));
+});
+
+function baslangicHarfleri(ad: string) {
+  if (!ad) return '?';
+  return ad
+    .split(' ')
+    .map((p) => p[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+}
+
+const kuyrukSekmeleri = computed(() => {
+  const sayilar = { yeni: 0, inceleniyor: 0, kapatildi: 0 };
+  islemler.value.forEach((islem) => {
+    const durum = islem.incelemeDurumu || 'yeni';
+    if (durum in sayilar) {
+      sayilar[durum as keyof typeof sayilar]++;
+    }
+  });
+
+  return [
+    { deger: 'hepsi', etiket: 'Tumu', sayi: islemler.value.length },
+    { deger: 'yeni', etiket: 'Bekleyen', sayi: sayilar.yeni },
+    { deger: 'inceleniyor', etiket: 'Inceleniyor', sayi: sayilar.inceleniyor },
+    { deger: 'kapatildi', etiket: 'Kapatildi', sayi: sayilar.kapatildi },
+  ];
+});
 
 const filtrelenmisIslemler = computed(() => {
   return islemler.value.filter((islem) => {
@@ -411,6 +503,8 @@ function aliciGoster(islem: any) {
 
 function cikisYap() {
   localStorage.removeItem('token');
+  localStorage.removeItem('rol');
+  localStorage.removeItem('adSoyad');
   router.push('/login');
 }
 
@@ -664,6 +758,33 @@ tr.neden-satiri li {
 .durum-inceleniyor {
   background: #fef3c7;
   color: #92400e;
+}
+
+.kuyruk-sekmeler {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 16px;
+}
+
+.kuyruk-sekme {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.kuyruk-sekme:hover {
+  color: #0f172a;
+}
+
+.kuyruk-sekme-aktif {
+  color: #0d9488;
+  border-bottom-color: #0d9488;
 }
 
 .filtre-cubugu {

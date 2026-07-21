@@ -4,7 +4,7 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
   background-color: #f7f9fb;
   color: #1a1a1a;
 }
@@ -30,24 +30,24 @@ body {
 }
 
 .navbar {
-  background: linear-gradient(135deg, #0f172a, #1e40af);
-  color: white;
-  padding: 14px 28px;
+  background: white;
+  color: #0f172a;
+  padding: 12px 28px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  gap: 20px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .navbar a {
-  color: white;
+  color: #475569;
   text-decoration: none;
   margin-right: 20px;
   font-weight: 500;
 }
 
 .navbar a:hover {
-  text-decoration: underline;
+  color: #0f172a;
 }
 
 .btn {
@@ -135,4 +135,161 @@ tr.riskli:hover {
   background: #fee2e2;
   padding: 10px;
   border-radius: 6px;
+}
+
+.uygulama-govde {
+  display: flex;
+  min-height: 100vh;
+}
+
+.kenar-menu {
+  width: 232px;
+  flex-shrink: 0;
+  background: white;
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  padding: 22px 14px;
+  transition: width 0.15s ease;
+}
+
+.kenar-menu-daraltilmis {
+  width: 68px;
+  padding: 22px 10px;
+}
+
+.kenar-menu-baslik-satiri {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 26px;
+  padding: 0 6px;
+  color: #0f172a;
+}
+
+.kenar-menu-daraltilmis .kenar-menu-baslik-satiri {
+  justify-content: center;
+}
+
+.kenar-menu-daralt-buton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  padding: 5px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.kenar-menu-daralt-buton:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.kenar-menu-etiket {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #94a3b8;
+  padding: 0 10px;
+  margin: 4px 0 6px;
+}
+
+.kenar-menu-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.kenar-menu-spacer {
+  flex: 1;
+}
+
+.kenar-menu-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  color: #475569;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.kenar-menu-link svg {
+  flex-shrink: 0;
+}
+
+.kenar-menu-link:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.kenar-menu-link-aktif {
+  background: #ecfdf5;
+  color: #0d9488;
+}
+
+.kenar-menu-kullanici {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 10px;
+  border-top: 1px solid #e2e8f0;
+  margin-top: 12px;
+}
+
+.kenar-menu-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0d9488, #1e40af);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.kenar-menu-isim {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.kenar-menu-rol {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.kenar-menu-cikis {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.kenar-menu-daraltilmis .kenar-menu-link {
+  justify-content: center;
+  padding: 9px;
+}
+
+.kenar-menu-daraltilmis .kenar-menu-kullanici {
+  justify-content: center;
+  padding: 12px 0;
+}
+
+.kenar-menu-daraltilmis .kenar-menu-cikis {
+  padding: 8px;
+}
+
+.ana-icerik {
+  flex: 1;
+  min-width: 0;
 }
