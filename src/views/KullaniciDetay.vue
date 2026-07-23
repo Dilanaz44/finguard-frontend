@@ -26,6 +26,31 @@
           <span v-if="!daraltilmis">Musteriler</span>
         </router-link>
         <router-link
+          to="/risk-kuyrugu"
+          class="kenar-menu-link"
+          :title="daraltilmis ? 'Risk Kuyrugu' : undefined"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 9v4" />
+            <circle cx="12" cy="16.5" r="0.5" fill="currentColor" />
+            <path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
+          </svg>
+          <span v-if="!daraltilmis">Risk Kuyrugu</span>
+        </router-link>
+        <router-link
+          to="/baglanti-grafi"
+          class="kenar-menu-link"
+          :title="daraltilmis ? 'Baglanti Grafigi' : undefined"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="6" cy="6" r="2.5" />
+            <circle cx="18" cy="6" r="2.5" />
+            <circle cx="12" cy="18" r="2.5" />
+            <path d="M8 7.5L10.5 16M16 7.5L13.5 16M8.5 6h7" />
+          </svg>
+          <span v-if="!daraltilmis">Baglanti Grafigi</span>
+        </router-link>
+        <router-link
           v-if="rol === 'kidemli_analist'"
           to="/audit-log"
           class="kenar-menu-link"
@@ -36,6 +61,18 @@
             <circle cx="12" cy="12" r="9" />
           </svg>
           <span v-if="!daraltilmis">Denetim Izi</span>
+        </router-link>
+        <router-link
+          v-if="rol === 'kidemli_analist'"
+          to="/risk-ayarlari"
+          class="kenar-menu-link"
+          :title="daraltilmis ? 'Risk Ayarlari' : undefined"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+          <span v-if="!daraltilmis">Risk Ayarlari</span>
         </router-link>
       </nav>
       <div class="kenar-menu-spacer"></div>
@@ -63,6 +100,15 @@
         <div>
           <h1>{{ musteri?.adSoyad || 'Musteri' }}</h1>
           <p>{{ musteri?.email || '' }}</p>
+          <div v-if="musteri" class="kyc-satiri">
+            <span class="kyc-rozet" :class="'kyc-' + musteri.riskSeviyesi">KYC: {{ kycEtiketMetni(musteri.riskSeviyesi) }}</span>
+            <select v-model="kycSecimi" @change="kycGuncelle" :disabled="kycGuncelleniyor">
+              <option value="dusuk">Dusuk</option>
+              <option value="orta">Orta</option>
+              <option value="yuksek">Yuksek</option>
+            </select>
+            <span v-if="kycMesaj" class="kaydet-onay">{{ kycMesaj }}</span>
+          </div>
         </div>
         <button v-if="!yukleniyor && islemler.length > 0" class="btn" @click="csvIndir">CSV Indir</button>
       </div>
@@ -88,7 +134,7 @@
             </svg>
           </div>
           <div class="istatistik-sayi">{{ riskliSayisi }}</div>
-          <div class="istatistik-etiket">Riskli Islem</div>
+          <div class="istatistik-etiket">Riskli Islem (bu sayfa)</div>
         </div>
 
         <div class="istatistik-karti">
@@ -99,7 +145,7 @@
             </svg>
           </div>
           <div class="istatistik-sayi">%{{ riskOrani }}</div>
-          <div class="istatistik-etiket">Risk Orani</div>
+          <div class="istatistik-etiket">Risk Orani (bu sayfa)</div>
         </div>
 
         <div class="istatistik-karti">
@@ -109,7 +155,7 @@
             </svg>
           </div>
           <div class="istatistik-sayi">{{ ortalamaRisk }}</div>
-          <div class="istatistik-etiket">Ortalama Risk Skoru</div>
+          <div class="istatistik-etiket">Ortalama Risk Skoru (bu sayfa)</div>
         </div>
       </div>
 
@@ -205,7 +251,9 @@
                   </span>
                 </td>
                 <td>
-                  <span class="durum-etiket" :class="'durum-' + islem.incelemeDurumu">{{ durumEtiketMetni(islem.incelemeDurumu) }}</span>
+                  <span v-if="islem.islemDurumu === 'ilk_onay_verildi'" class="durum-etiket durum-beklemede">1/2 Onay</span>
+                  <span v-else-if="islem.islemDurumu === 'beklemede'" class="durum-etiket durum-beklemede">Onay Bekliyor</span>
+                  <span v-else class="durum-etiket" :class="'durum-' + islem.incelemeDurumu">{{ durumEtiketMetni(islem.incelemeDurumu) }}</span>
                 </td>
               </tr>
               <tr v-if="acikNedenId === islem.id" class="neden-satiri">
@@ -232,6 +280,9 @@
                     <button class="btn btn-kaydet" @click.stop="notKaydet(islem)" :disabled="kaydediliyor">
                       {{ kaydediliyor ? 'Kaydediliyor...' : 'Kaydet' }}
                     </button>
+                    <button class="btn btn-kaydet" @click.stop="sarTaslagiIndir(islem)">
+  SAR Taslagi Indir
+</button>
                     <span v-if="kaydetMesaji[islem.id]" class="kaydet-onay">{{ kaydetMesaji[islem.id] }}</span>
                     <p v-if="islem.incelemeAnalist" class="inceleme-bilgi">
                       Son inceleme: {{ islem.incelemeAnalist.adSoyad }} ({{ formatTarih(islem.incelemeTarihi) }})
@@ -242,6 +293,12 @@
             </template>
           </tbody>
         </table>
+
+        <div v-if="!yukleniyor && toplamSayfa > 1" class="sayfalama">
+          <button class="btn" :disabled="sayfa <= 1" @click="oncekiSayfa">&larr; Onceki</button>
+          <span class="sayfalama-bilgi">Sayfa {{ sayfa }} / {{ toplamSayfa }}</span>
+          <button class="btn" :disabled="sayfa >= toplamSayfa" @click="sonrakiSayfa">Sonraki &rarr;</button>
+        </div>
       </div>
     </div>
     </main>
@@ -254,7 +311,13 @@ import { useRoute, useRouter } from 'vue-router';
 import Logo from '../components/Logo.vue';
 
 const islemler = ref<any[]>([]);
+const sayfa = ref(1);
+const toplamSayfa = ref(1);
+const toplamKayit = ref(0);
 const musteri = ref<any>(null);
+const kycSecimi = ref('dusuk');
+const kycGuncelleniyor = ref(false);
+const kycMesaj = ref('');
 const hesapHaritasi = ref<Record<number, any>>({});
 const yukleniyor = ref(true);
 const hata = ref('');
@@ -407,6 +470,47 @@ function durumEtiketMetni(durum: string) {
   return 'Yeni';
 }
 
+function kycEtiketMetni(seviye: string) {
+  if (seviye === 'orta') return 'Orta';
+  if (seviye === 'yuksek') return 'Yuksek';
+  return 'Dusuk';
+}
+
+async function kycGuncelle() {
+  if (!musteri.value) return;
+  const token = localStorage.getItem('token');
+  if (!token) {
+    router.push('/login');
+    return;
+  }
+
+  kycGuncelleniyor.value = true;
+
+  try {
+    const response = await fetch(`http://localhost:3000/musteriler/${musteri.value.id}/risk-seviyesi`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ riskSeviyesi: kycSecimi.value }),
+    });
+
+    if (!response.ok) {
+      hata.value = 'KYC risk seviyesi guncellenemedi';
+      return;
+    }
+
+    const guncellenenMusteri = await response.json();
+    musteri.value = { ...musteri.value, riskSeviyesi: guncellenenMusteri.riskSeviyesi };
+    kycMesaj.value = 'Kaydedildi ✓';
+    setTimeout(() => {
+      kycMesaj.value = '';
+    }, 3000);
+  } catch (err) {
+    hata.value = 'Sunucuya baglanilamadi';
+  } finally {
+    kycGuncelleniyor.value = false;
+  }
+}
+
 function formatTarih(tarih: string) {
   if (!tarih) return '';
   return new Date(tarih).toLocaleString('tr-TR');
@@ -457,16 +561,21 @@ async function notKaydet(islem: any) {
   }
 }
 
-const toplamIslem = computed(() => islemler.value.length);
+// Gercek toplam (tum sayfalar) - API'nin toplamKayit alanindan. Diger 3 istatistik
+// ise sadece o an ekranda goruntulenen sayfaya gore hesaplaniyor (asagida
+// "(bu sayfa)" notuyla belirtiliyor) - tumunu dogru hesaplamak icin backend'in
+// ayrica aggregate sorgusu dondurmesi gerekir, bu kapsam disi birakildi.
+const toplamIslem = computed(() => toplamKayit.value);
+const sayfadakiIslemSayisi = computed(() => islemler.value.length);
 const riskliSayisi = computed(() => islemler.value.filter((i) => i.riskli).length);
 const riskOrani = computed(() => {
-  if (toplamIslem.value === 0) return '0';
-  return ((riskliSayisi.value / toplamIslem.value) * 100).toFixed(1);
+  if (sayfadakiIslemSayisi.value === 0) return '0';
+  return ((riskliSayisi.value / sayfadakiIslemSayisi.value) * 100).toFixed(1);
 });
 const ortalamaRisk = computed(() => {
-  if (toplamIslem.value === 0) return '0';
+  if (sayfadakiIslemSayisi.value === 0) return '0';
   const toplam = islemler.value.reduce((acc, i) => acc + Number(i.riskSkoru || 0), 0);
-  return (toplam / toplamIslem.value).toFixed(1);
+  return (toplam / sayfadakiIslemSayisi.value).toFixed(1);
 });
 
 function formatTutar(tutar: number) {
@@ -508,6 +617,25 @@ function cikisYap() {
   router.push('/login');
 }
 
+async function sarTaslagiIndir(islem: any) {
+  const token = localStorage.getItem('token');
+
+  try {
+    const response = await fetch(`http://localhost:3000/islemler/${islem.id}/sar-taslagi`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `sar-taslak-${islem.id}.txt`;
+    link.click();
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    hata.value = 'SAR taslagi indirilemedi';
+  }
+}
 async function csvIndir() {
   const token = localStorage.getItem('token');
   const musteriId = route.params.id;
@@ -545,7 +673,7 @@ async function verileriYukle() {
   try {
     const [musterilerRes, islemlerRes, hesaplarRes] = await Promise.all([
       fetch('http://localhost:3000/musteriler', { headers: { Authorization: `Bearer ${token}` } }),
-      fetch(`http://localhost:3000/islemler?musteriId=${musteriId}`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`http://localhost:3000/islemler?musteriId=${musteriId}&sayfa=${sayfa.value}&limit=20`, { headers: { Authorization: `Bearer ${token}` } }),
       fetch('http://localhost:3000/hesaplar', { headers: { Authorization: `Bearer ${token}` } }),
     ]);
 
@@ -557,8 +685,12 @@ async function verileriYukle() {
 
     const musteriler = await musterilerRes.json();
     musteri.value = musteriler.find((m: any) => String(m.id) === String(musteriId));
+    kycSecimi.value = musteri.value?.riskSeviyesi || 'dusuk';
 
-    islemler.value = await islemlerRes.json();
+    const islemlerYaniti = await islemlerRes.json();
+    islemler.value = islemlerYaniti.veri;
+    toplamSayfa.value = islemlerYaniti.toplamSayfa;
+    toplamKayit.value = islemlerYaniti.toplamKayit;
 
     const hesaplar = await hesaplarRes.json();
     const harita: Record<number, any> = {};
@@ -573,8 +705,23 @@ async function verileriYukle() {
   }
 }
 
+function oncekiSayfa() {
+  if (sayfa.value <= 1) return;
+  sayfa.value -= 1;
+  verileriYukle();
+}
+
+function sonrakiSayfa() {
+  if (sayfa.value >= toplamSayfa.value) return;
+  sayfa.value += 1;
+  verileriYukle();
+}
+
 onMounted(verileriYukle);
-watch(() => route.params.id, verileriYukle);
+watch(() => route.params.id, () => {
+  sayfa.value = 1;
+  verileriYukle();
+});
 </script>
 
 <style scoped>
@@ -760,6 +907,37 @@ tr.neden-satiri li {
   color: #92400e;
 }
 
+.durum-beklemede {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.kyc-satiri {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.kyc-rozet {
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-weight: 500;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.kyc-orta {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.kyc-yuksek {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
 .kuyruk-sekmeler {
   display: flex;
   gap: 4px;
@@ -792,6 +970,19 @@ tr.neden-satiri li {
   flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 16px;
+}
+
+.sayfalama {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px 0 4px;
+}
+
+.sayfalama-bilgi {
+  font-size: 13px;
+  color: #64748b;
 }
 
 .arama-kutusu {

@@ -26,6 +26,31 @@
           <span v-if="!daraltilmis">Musteriler</span>
         </router-link>
         <router-link
+          to="/risk-kuyrugu"
+          class="kenar-menu-link"
+          :title="daraltilmis ? 'Risk Kuyrugu' : undefined"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 9v4" />
+            <circle cx="12" cy="16.5" r="0.5" fill="currentColor" />
+            <path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
+          </svg>
+          <span v-if="!daraltilmis">Risk Kuyrugu</span>
+        </router-link>
+        <router-link
+          to="/baglanti-grafi"
+          class="kenar-menu-link"
+          :title="daraltilmis ? 'Baglanti Grafigi' : undefined"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="6" cy="6" r="2.5" />
+            <circle cx="18" cy="6" r="2.5" />
+            <circle cx="12" cy="18" r="2.5" />
+            <path d="M8 7.5L10.5 16M16 7.5L13.5 16M8.5 6h7" />
+          </svg>
+          <span v-if="!daraltilmis">Baglanti Grafigi</span>
+        </router-link>
+        <router-link
           v-if="rol === 'kidemli_analist'"
           to="/audit-log"
           class="kenar-menu-link"
@@ -36,6 +61,18 @@
             <circle cx="12" cy="12" r="9" />
           </svg>
           <span v-if="!daraltilmis">Denetim Izi</span>
+        </router-link>
+        <router-link
+          v-if="rol === 'kidemli_analist'"
+          to="/risk-ayarlari"
+          class="kenar-menu-link"
+          :title="daraltilmis ? 'Risk Ayarlari' : undefined"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+          <span v-if="!daraltilmis">Risk Ayarlari</span>
         </router-link>
       </nav>
       <div class="kenar-menu-spacer"></div>
@@ -84,6 +121,10 @@
           <div class="kpi-sayi">{{ toplamBekleyen }}</div>
           <div class="kpi-etiket">Bekleyen Inceleme</div>
         </div>
+        <router-link to="/risk-kuyrugu" class="kpi-karti kpi-uyari" v-if="askidaBekleyenSayisi > 0">
+          <div class="kpi-sayi">{{ askidaBekleyenSayisi }}</div>
+          <div class="kpi-etiket">Askida Bekleyen</div>
+        </router-link>
       </div>
 
       <div v-if="!yukleniyor && toplamBekleyen > 0" class="bekleyen-banner">
@@ -113,7 +154,16 @@
         >
           <div class="kullanici-avatar">{{ baslangicHarfleri(musteri.adSoyad) }}</div>
           <div class="kullanici-bilgi">
-            <div class="kullanici-adi">{{ musteri.adSoyad }}</div>
+            <div class="kullanici-adi">
+              {{ musteri.adSoyad }}
+              <span
+                v-if="musteri.riskSeviyesi === 'orta' || musteri.riskSeviyesi === 'yuksek'"
+                class="kyc-rozet-mini"
+                :class="'kyc-rozet-mini-' + musteri.riskSeviyesi"
+              >
+                KYC: {{ musteri.riskSeviyesi === 'yuksek' ? 'Yuksek' : 'Orta' }}
+              </span>
+            </div>
             <div class="kullanici-email">{{ musteri.email }}</div>
           </div>
           <div class="kullanici-istatistik">
@@ -179,6 +229,10 @@ function bekleyenSayisi(musteriId: number) {
 
 const toplamBekleyen = computed(() => {
   return musteriler.value.reduce((acc, m) => acc + bekleyenSayisi(m.id), 0);
+});
+
+const askidaBekleyenSayisi = computed(() => {
+  return tumIslemler.value.filter((i) => ['beklemede', 'ilk_onay_verildi'].includes(i.islemDurumu)).length;
 });
 
 const toplamIslemSayisi = computed(() => tumIslemler.value.length);
@@ -250,7 +304,7 @@ onMounted(async () => {
   try {
     const [musterilerRes, islemlerRes, hesaplarRes] = await Promise.all([
       fetch('http://localhost:3000/musteriler', { headers: { Authorization: `Bearer ${token}` } }),
-      fetch('http://localhost:3000/islemler', { headers: { Authorization: `Bearer ${token}` } }),
+      fetch('http://localhost:3000/islemler?limit=10000', { headers: { Authorization: `Bearer ${token}` } }),
       fetch('http://localhost:3000/hesaplar', { headers: { Authorization: `Bearer ${token}` } }),
     ]);
 
@@ -261,7 +315,7 @@ onMounted(async () => {
     }
 
     musteriler.value = await musterilerRes.json();
-    tumIslemler.value = await islemlerRes.json();
+    tumIslemler.value = (await islemlerRes.json()).veri;
 
     const hesaplar = await hesaplarRes.json();
     const harita: Record<number, number> = {};
@@ -399,6 +453,25 @@ onMounted(async () => {
   color: #0f172a;
 }
 
+.kyc-rozet-mini {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.kyc-rozet-mini-orta {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.kyc-rozet-mini-yuksek {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
 .kullanici-email {
   font-size: 13px;
   color: #94a3b8;
@@ -448,6 +521,9 @@ onMounted(async () => {
   border-radius: 12px;
   padding: 16px 18px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: block;
+  text-decoration: none;
+  color: inherit;
 }
 
 .kpi-karti.kpi-uyari {

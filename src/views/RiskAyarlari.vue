@@ -51,8 +51,9 @@
           <span v-if="!daraltilmis">Baglanti Grafigi</span>
         </router-link>
         <router-link
+          v-if="rol === 'kidemli_analist'"
           to="/audit-log"
-          class="kenar-menu-link kenar-menu-link-aktif"
+          class="kenar-menu-link"
           :title="daraltilmis ? 'Denetim Izi' : undefined"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -64,7 +65,7 @@
         <router-link
           v-if="rol === 'kidemli_analist'"
           to="/risk-ayarlari"
-          class="kenar-menu-link"
+          class="kenar-menu-link kenar-menu-link-aktif"
           :title="daraltilmis ? 'Risk Ayarlari' : undefined"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -94,31 +95,66 @@
     <main class="ana-icerik">
     <div class="container">
       <div class="sayfa-baslik">
-        <h1>Denetim Izi</h1>
-        <p>Analistlerin yaptigi onemli eylemlerin kaydi.</p>
+        <h1>Risk Ayarlari</h1>
+        <p>Risk motorunun esik degerlerini panelden yapilandir. Degisiklikler bir sonraki islemden itibaren gecerli olur.</p>
       </div>
 
-      <div class="card">
+      <div v-if="rol !== 'kidemli_analist'" class="card">
+        <p>Bu sayfaya sadece kidemli analistler erisebilir.</p>
+      </div>
+
+      <div v-else class="card">
         <div v-if="yukleniyor" class="yukleniyor-satiri"><span class="spinner"></span> Yukleniyor...</div>
         <p v-if="hata" class="hata-mesaj">{{ hata }}</p>
-        <p v-if="!yukleniyor && kayitlar.length === 0 && !hata">Henuz kayit yok.</p>
 
-        <table v-if="!yukleniyor && kayitlar.length > 0">
-          <thead>
-            <tr>
-              <th>Tarih</th>
-              <th>Analist</th>
-              <th>Eylem</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="kayit in kayitlar" :key="kayit.id">
-              <td>{{ formatTarih(kayit.tarih) }}</td>
-              <td>{{ kayit.analist?.adSoyad }}</td>
-              <td>{{ kayit.eylem }}</td>
-            </tr>
-          </tbody>
-        </table>
+        <form v-if="!yukleniyor && ayarlar" class="ayar-formu" @submit.prevent="kaydet">
+          <div class="ayar-satiri">
+            <label>Anormal tutar carpani</label>
+            <input type="number" step="0.1" min="0.1" v-model.number="ayarlar.anormalTutarCarpani" />
+            <span class="ayar-aciklama">Islem tutari gecmis ortalamanin kac katini gecerse anormal sayilir</span>
+          </div>
+          <div class="ayar-satiri">
+            <label>Siklik penceresi (dakika)</label>
+            <input type="number" min="1" v-model.number="ayarlar.siklikPencereDakika" />
+            <span class="ayar-aciklama">Son kac dakika kontrol edilecek</span>
+          </div>
+          <div class="ayar-satiri">
+            <label>Siklik esigi (adet)</label>
+            <input type="number" min="1" v-model.number="ayarlar.siklikEsikAdet" />
+            <span class="ayar-aciklama">O surede kac islem olursa supheli</span>
+          </div>
+          <div class="ayar-satiri">
+            <label>Gece baslangic saati</label>
+            <input type="number" min="0" max="23" v-model.number="ayarlar.geceBaslangicSaat" />
+          </div>
+          <div class="ayar-satiri">
+            <label>Gece bitis saati</label>
+            <input type="number" min="0" max="23" v-model.number="ayarlar.geceBitisSaat" />
+          </div>
+          <div class="ayar-satiri">
+            <label>Riskli esik puani</label>
+            <input type="number" min="1" max="100" v-model.number="ayarlar.riskliEsikPuan" />
+            <span class="ayar-aciklama">Toplam puan bunun ustundeyse islem riskli sayilir</span>
+          </div>
+          <div class="ayar-satiri">
+            <label>Askiya alma esik puani</label>
+            <input type="number" min="1" max="100" v-model.number="ayarlar.askiyaAlmaEsikPuan" />
+            <span class="ayar-aciklama">Toplam puan bunun ustundeyse islem onaya birakilir</span>
+          </div>
+          <div class="ayar-satiri">
+            <label>KYC orta risk puani</label>
+            <input type="number" min="0" v-model.number="ayarlar.kycOrtaRiskPuan" />
+          </div>
+          <div class="ayar-satiri">
+            <label>KYC yuksek risk puani</label>
+            <input type="number" min="0" v-model.number="ayarlar.kycYuksekRiskPuan" />
+          </div>
+
+          <button type="submit" class="btn btn-kaydet" :disabled="kaydediliyor">
+            {{ kaydediliyor ? 'Kaydediliyor...' : 'Kaydet' }}
+          </button>
+          <span v-if="kaydetMesaji" class="kaydet-onay">{{ kaydetMesaji }}</span>
+        </form>
       </div>
     </div>
     </main>
@@ -130,9 +166,11 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import Logo from '../components/Logo.vue';
 
-const kayitlar = ref<any[]>([]);
+const ayarlar = ref<any>(null);
 const yukleniyor = ref(true);
+const kaydediliyor = ref(false);
 const hata = ref('');
+const kaydetMesaji = ref('');
 const router = useRouter();
 const rol = localStorage.getItem('rol');
 const adSoyad = localStorage.getItem('adSoyad') || '';
@@ -159,8 +197,37 @@ function cikisYap() {
   router.push('/login');
 }
 
-function formatTarih(tarih: string) {
-  return new Date(tarih).toLocaleString('tr-TR');
+async function kaydet() {
+  const token = localStorage.getItem('token');
+  if (!token || !ayarlar.value) return;
+
+  kaydediliyor.value = true;
+  hata.value = '';
+
+  try {
+    const response = await fetch('http://localhost:3000/risk-ayarlari', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify(ayarlar.value),
+    });
+
+    const govde = await response.json();
+
+    if (!response.ok) {
+      hata.value = govde.mesaj || 'Ayarlar kaydedilemedi';
+      return;
+    }
+
+    ayarlar.value = govde;
+    kaydetMesaji.value = 'Kaydedildi ✓';
+    setTimeout(() => {
+      kaydetMesaji.value = '';
+    }, 3000);
+  } catch (err) {
+    hata.value = 'Sunucuya baglanilamadi';
+  } finally {
+    kaydediliyor.value = false;
+  }
 }
 
 onMounted(async () => {
@@ -171,17 +238,22 @@ onMounted(async () => {
     return;
   }
 
+  if (rol !== 'kidemli_analist') {
+    yukleniyor.value = false;
+    return;
+  }
+
   try {
-    const response = await fetch('http://localhost:3000/audit-log', {
+    const response = await fetch('http://localhost:3000/risk-ayarlari', {
       headers: { Authorization: `Bearer ${token}` },
     });
 
     if (!response.ok) {
-      hata.value = 'Kayitlar yuklenemedi';
+      hata.value = 'Ayarlar yuklenemedi';
       return;
     }
 
-    kayitlar.value = await response.json();
+    ayarlar.value = await response.json();
   } catch (err) {
     hata.value = 'Sunucuya baglanilamadi';
   } finally {
@@ -228,5 +300,47 @@ onMounted(async () => {
   to {
     transform: rotate(360deg);
   }
+}
+
+.ayar-formu {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 480px;
+}
+
+.ayar-satiri {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ayar-satiri label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.ayar-satiri input {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.ayar-aciklama {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.btn-kaydet {
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+.kaydet-onay {
+  color: #0d9488;
+  font-size: 13px;
+  font-weight: 500;
 }
 </style>
