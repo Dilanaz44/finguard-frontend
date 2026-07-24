@@ -17,6 +17,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { API_URL } from '../api';
 import { useRoute, useRouter } from 'vue-router';
 
 const yeniSifre = ref('');
@@ -37,7 +38,7 @@ async function sifirla() {
   }
 
   try {
-    const response = await fetch('http://localhost:3000/sifre-sifirla', {
+    const response = await fetch(`${API_URL}/sifre-sifirla`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token, yeniSifre: yeniSifre.value }),

@@ -17,6 +17,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { API_URL } from '../api';
 
 const email = ref('');
 const mesaj = ref('');
@@ -24,7 +25,7 @@ const mesaj = ref('');
 async function gonder() {
   mesaj.value = '';
   try {
-    const response = await fetch('http://localhost:3000/sifremi-unuttum', {
+    const response = await fetch(`${API_URL}/sifremi-unuttum`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: email.value }),

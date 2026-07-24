@@ -76,13 +76,13 @@
         </router-link>
       </nav>
       <div class="kenar-menu-spacer"></div>
-      <div class="kenar-menu-kullanici">
+      <router-link to="/profil" class="kenar-menu-kullanici kenar-menu-kullanici-link">
         <div class="kenar-menu-avatar">{{ baslangicHarfleri(adSoyad) }}</div>
         <div v-if="!daraltilmis">
           <div class="kenar-menu-isim">{{ adSoyad }}</div>
           <div class="kenar-menu-rol">{{ rolEtiketi }}</div>
         </div>
-      </div>
+      </router-link>
       <button class="btn btn-cikis kenar-menu-cikis" @click="cikisYap" :title="daraltilmis ? 'Cikis Yap' : undefined">
         <span v-if="!daraltilmis">Cikis Yap</span>
         <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -126,6 +126,8 @@
           <div class="kpi-etiket">Askida Bekleyen</div>
         </router-link>
       </div>
+
+      <DashboardGrafikleri v-if="!yukleniyor && musteriler.length > 0" :islemler="tumIslemler" />
 
       <div v-if="!yukleniyor && toplamBekleyen > 0" class="bekleyen-banner">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
@@ -196,6 +198,8 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import Logo from '../components/Logo.vue';
+import DashboardGrafikleri from '../components/DashboardGrafikleri.vue';
+import { API_URL } from '../api';
 
 const musteriler = ref<any[]>([]);
 const tumIslemler = ref<any[]>([]);
@@ -303,9 +307,9 @@ onMounted(async () => {
 
   try {
     const [musterilerRes, islemlerRes, hesaplarRes] = await Promise.all([
-      fetch('http://localhost:3000/musteriler', { headers: { Authorization: `Bearer ${token}` } }),
-      fetch('http://localhost:3000/islemler?limit=10000', { headers: { Authorization: `Bearer ${token}` } }),
-      fetch('http://localhost:3000/hesaplar', { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${API_URL}/musteriler`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${API_URL}/islemler?limit=10000`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${API_URL}/hesaplar`, { headers: { Authorization: `Bearer ${token}` } }),
     ]);
 
     if (!musterilerRes.ok || !islemlerRes.ok || !hesaplarRes.ok) {

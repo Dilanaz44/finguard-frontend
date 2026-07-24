@@ -43,6 +43,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import Logo from '../components/Logo.vue';
+import { API_URL } from '../api';
 
 const email = ref('');
 const sifre = ref('');
@@ -53,7 +54,7 @@ const router = useRouter();
 async function girisYap() {
   hata.value = '';
   try {
-    const response = await fetch('http://localhost:3000/login', {
+    const response = await fetch(`${API_URL}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: email.value, sifre: sifre.value }),

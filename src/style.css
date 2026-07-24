@@ -249,6 +249,17 @@ tr.riskli:hover {
   margin-top: 12px;
 }
 
+.kenar-menu-kullanici-link {
+  text-decoration: none;
+  color: inherit;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.kenar-menu-kullanici-link:hover {
+  background: #f1f5f9;
+}
+
 .kenar-menu-avatar {
   width: 32px;
   height: 32px;

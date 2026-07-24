@@ -76,13 +76,13 @@
         </router-link>
       </nav>
       <div class="kenar-menu-spacer"></div>
-      <div class="kenar-menu-kullanici">
+      <router-link to="/profil" class="kenar-menu-kullanici kenar-menu-kullanici-link">
         <div class="kenar-menu-avatar">{{ baslangicHarfleri(adSoyad) }}</div>
         <div v-if="!daraltilmis">
           <div class="kenar-menu-isim">{{ adSoyad }}</div>
           <div class="kenar-menu-rol">{{ rolEtiketi }}</div>
         </div>
-      </div>
+      </router-link>
       <button class="btn btn-cikis kenar-menu-cikis" @click="cikisYap" :title="daraltilmis ? 'Cikis Yap' : undefined">
         <span v-if="!daraltilmis">Cikis Yap</span>
         <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -309,6 +309,7 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import Logo from '../components/Logo.vue';
+import { API_URL } from '../api';
 
 const islemler = ref<any[]>([]);
 const sayfa = ref(1);
@@ -487,7 +488,7 @@ async function kycGuncelle() {
   kycGuncelleniyor.value = true;
 
   try {
-    const response = await fetch(`http://localhost:3000/musteriler/${musteri.value.id}/risk-seviyesi`, {
+    const response = await fetch(`${API_URL}/musteriler/${musteri.value.id}/risk-seviyesi`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify({ riskSeviyesi: kycSecimi.value }),
@@ -526,7 +527,7 @@ async function notKaydet(islem: any) {
   kaydediliyor.value = true;
 
   try {
-    const response = await fetch(`http://localhost:3000/islemler/${islem.id}`, {
+    const response = await fetch(`${API_URL}/islemler/${islem.id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -621,7 +622,7 @@ async function sarTaslagiIndir(islem: any) {
   const token = localStorage.getItem('token');
 
   try {
-    const response = await fetch(`http://localhost:3000/islemler/${islem.id}/sar-taslagi`, {
+    const response = await fetch(`${API_URL}/islemler/${islem.id}/sar-taslagi`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -641,7 +642,7 @@ async function csvIndir() {
   const musteriId = route.params.id;
 
   try {
-    const response = await fetch(`http://localhost:3000/islemler/export?musteriId=${musteriId}`, {
+    const response = await fetch(`${API_URL}/islemler/export?musteriId=${musteriId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -672,9 +673,9 @@ async function verileriYukle() {
 
   try {
     const [musterilerRes, islemlerRes, hesaplarRes] = await Promise.all([
-      fetch('http://localhost:3000/musteriler', { headers: { Authorization: `Bearer ${token}` } }),
-      fetch(`http://localhost:3000/islemler?musteriId=${musteriId}&sayfa=${sayfa.value}&limit=20`, { headers: { Authorization: `Bearer ${token}` } }),
-      fetch('http://localhost:3000/hesaplar', { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${API_URL}/musteriler`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${API_URL}/islemler?musteriId=${musteriId}&sayfa=${sayfa.value}&limit=20`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${API_URL}/hesaplar`, { headers: { Authorization: `Bearer ${token}` } }),
     ]);
 
     if (!musterilerRes.ok || !islemlerRes.ok || !hesaplarRes.ok) {

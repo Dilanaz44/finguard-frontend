@@ -65,7 +65,7 @@
         <router-link
           v-if="rol === 'kidemli_analist'"
           to="/risk-ayarlari"
-          class="kenar-menu-link kenar-menu-link-aktif"
+          class="kenar-menu-link"
           :title="daraltilmis ? 'Risk Ayarlari' : undefined"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -76,7 +76,7 @@
         </router-link>
       </nav>
       <div class="kenar-menu-spacer"></div>
-      <router-link to="/profil" class="kenar-menu-kullanici kenar-menu-kullanici-link">
+      <router-link to="/profil" class="kenar-menu-kullanici kenar-menu-kullanici-link kenar-menu-link-aktif">
         <div class="kenar-menu-avatar">{{ baslangicHarfleri(adSoyad) }}</div>
         <div v-if="!daraltilmis">
           <div class="kenar-menu-isim">{{ adSoyad }}</div>
@@ -95,63 +95,31 @@
     <main class="ana-icerik">
     <div class="container">
       <div class="sayfa-baslik">
-        <h1>Risk Ayarlari</h1>
-        <p>Risk motorunun esik degerlerini panelden yapilandir. Degisiklikler bir sonraki islemden itibaren gecerli olur.</p>
+        <h1>Profil</h1>
+        <p>Hesap bilgilerin ve sifre degistirme.</p>
       </div>
 
-      <div v-if="rol !== 'kidemli_analist'" class="card">
-        <p>Bu sayfaya sadece kidemli analistler erisebilir.</p>
-      </div>
+      <div class="card">
+        <h2>Sifre Degistir</h2>
+        <form class="ayar-formu" @submit.prevent="sifreDegistir">
+          <div class="ayar-satiri">
+            <label>Mevcut sifre</label>
+            <input type="password" v-model="mevcutSifre" autocomplete="current-password" required />
+          </div>
+          <div class="ayar-satiri">
+            <label>Yeni sifre</label>
+            <input type="password" v-model="yeniSifre" autocomplete="new-password" required />
+            <span class="ayar-aciklama">En az 8 karakter, en az bir harf ve bir rakam icermeli</span>
+          </div>
+          <div class="ayar-satiri">
+            <label>Yeni sifre (tekrar)</label>
+            <input type="password" v-model="yeniSifreTekrar" autocomplete="new-password" required />
+          </div>
 
-      <div v-else class="card">
-        <div v-if="yukleniyor" class="yukleniyor-satiri"><span class="spinner"></span> Yukleniyor...</div>
-        <p v-if="hata" class="hata-mesaj">{{ hata }}</p>
-
-        <form v-if="!yukleniyor && ayarlar" class="ayar-formu" @submit.prevent="kaydet">
-          <div class="ayar-satiri">
-            <label>Anormal tutar carpani</label>
-            <input type="number" step="0.1" min="0.1" v-model.number="ayarlar.anormalTutarCarpani" />
-            <span class="ayar-aciklama">Islem tutari gecmis ortalamanin kac katini gecerse anormal sayilir</span>
-          </div>
-          <div class="ayar-satiri">
-            <label>Siklik penceresi (dakika)</label>
-            <input type="number" min="1" v-model.number="ayarlar.siklikPencereDakika" />
-            <span class="ayar-aciklama">Son kac dakika kontrol edilecek</span>
-          </div>
-          <div class="ayar-satiri">
-            <label>Siklik esigi (adet)</label>
-            <input type="number" min="1" v-model.number="ayarlar.siklikEsikAdet" />
-            <span class="ayar-aciklama">O surede kac islem olursa supheli</span>
-          </div>
-          <div class="ayar-satiri">
-            <label>Gece baslangic saati</label>
-            <input type="number" min="0" max="23" v-model.number="ayarlar.geceBaslangicSaat" />
-          </div>
-          <div class="ayar-satiri">
-            <label>Gece bitis saati</label>
-            <input type="number" min="0" max="23" v-model.number="ayarlar.geceBitisSaat" />
-          </div>
-          <div class="ayar-satiri">
-            <label>Riskli esik puani</label>
-            <input type="number" min="1" max="100" v-model.number="ayarlar.riskliEsikPuan" />
-            <span class="ayar-aciklama">Toplam puan bunun ustundeyse islem riskli sayilir</span>
-          </div>
-          <div class="ayar-satiri">
-            <label>Askiya alma esik puani</label>
-            <input type="number" min="1" max="100" v-model.number="ayarlar.askiyaAlmaEsikPuan" />
-            <span class="ayar-aciklama">Toplam puan bunun ustundeyse islem onaya birakilir</span>
-          </div>
-          <div class="ayar-satiri">
-            <label>KYC orta risk puani</label>
-            <input type="number" min="0" v-model.number="ayarlar.kycOrtaRiskPuan" />
-          </div>
-          <div class="ayar-satiri">
-            <label>KYC yuksek risk puani</label>
-            <input type="number" min="0" v-model.number="ayarlar.kycYuksekRiskPuan" />
-          </div>
+          <p v-if="hata" class="hata-mesaj">{{ hata }}</p>
 
           <button type="submit" class="btn btn-kaydet" :disabled="kaydediliyor">
-            {{ kaydediliyor ? 'Kaydediliyor...' : 'Kaydet' }}
+            {{ kaydediliyor ? 'Kaydediliyor...' : 'Sifreyi Degistir' }}
           </button>
           <span v-if="kaydetMesaji" class="kaydet-onay">{{ kaydetMesaji }}</span>
         </form>
@@ -162,13 +130,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import Logo from '../components/Logo.vue';
 import { API_URL } from '../api';
 
-const ayarlar = ref<any>(null);
-const yukleniyor = ref(true);
+const mevcutSifre = ref('');
+const yeniSifre = ref('');
+const yeniSifreTekrar = ref('');
 const kaydediliyor = ref(false);
 const hata = ref('');
 const kaydetMesaji = ref('');
@@ -177,9 +146,6 @@ const rol = localStorage.getItem('rol');
 const adSoyad = localStorage.getItem('adSoyad') || '';
 const rolEtiketi = computed(() => (rol === 'kidemli_analist' ? 'Kidemli Analist' : 'Analist'));
 const daraltilmis = ref(localStorage.getItem('kenarMenuDaraltilmis') === 'true');
-watch(daraltilmis, (deger) => {
-  localStorage.setItem('kenarMenuDaraltilmis', String(deger));
-});
 
 function baslangicHarfleri(ad: string) {
   if (!ad) return '?';
@@ -198,28 +164,40 @@ function cikisYap() {
   router.push('/login');
 }
 
-async function kaydet() {
+async function sifreDegistir() {
+  hata.value = '';
+  kaydetMesaji.value = '';
+
+  if (yeniSifre.value !== yeniSifreTekrar.value) {
+    hata.value = 'Yeni sifreler birbiriyle eslesmiyor';
+    return;
+  }
+
   const token = localStorage.getItem('token');
-  if (!token || !ayarlar.value) return;
+  if (!token) {
+    router.push('/login');
+    return;
+  }
 
   kaydediliyor.value = true;
-  hata.value = '';
 
   try {
-    const response = await fetch(`${API_URL}/risk-ayarlari`, {
-      method: 'PATCH',
+    const response = await fetch(`${API_URL}/sifre-degistir`, {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify(ayarlar.value),
+      body: JSON.stringify({ mevcutSifre: mevcutSifre.value, yeniSifre: yeniSifre.value }),
     });
 
     const govde = await response.json();
 
     if (!response.ok) {
-      hata.value = govde.mesaj || 'Ayarlar kaydedilemedi';
+      hata.value = govde.mesaj || 'Sifre degistirilemedi';
       return;
     }
 
-    ayarlar.value = govde;
+    mevcutSifre.value = '';
+    yeniSifre.value = '';
+    yeniSifreTekrar.value = '';
     kaydetMesaji.value = 'Kaydedildi ✓';
     setTimeout(() => {
       kaydetMesaji.value = '';
@@ -230,37 +208,6 @@ async function kaydet() {
     kaydediliyor.value = false;
   }
 }
-
-onMounted(async () => {
-  const token = localStorage.getItem('token');
-
-  if (!token) {
-    router.push('/login');
-    return;
-  }
-
-  if (rol !== 'kidemli_analist') {
-    yukleniyor.value = false;
-    return;
-  }
-
-  try {
-    const response = await fetch(`${API_URL}/risk-ayarlari`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    if (!response.ok) {
-      hata.value = 'Ayarlar yuklenemedi';
-      return;
-    }
-
-    ayarlar.value = await response.json();
-  } catch (err) {
-    hata.value = 'Sunucuya baglanilamadi';
-  } finally {
-    yukleniyor.value = false;
-  }
-});
 </script>
 
 <style scoped>
@@ -280,34 +227,17 @@ onMounted(async () => {
   font-size: 14px;
 }
 
-.yukleniyor-satiri {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #64748b;
-  font-size: 14px;
-}
-
-.spinner {
-  width: 14px;
-  height: 14px;
-  border: 2px solid #cbd5e1;
-  border-top-color: #0d9488;
-  border-radius: 50%;
-  animation: spinner-donme 0.7s linear infinite;
-}
-
-@keyframes spinner-donme {
-  to {
-    transform: rotate(360deg);
-  }
+.card h2 {
+  font-size: 16px;
+  color: #0f172a;
+  margin: 0 0 16px;
 }
 
 .ayar-formu {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-width: 480px;
+  max-width: 360px;
 }
 
 .ayar-satiri {

@@ -75,13 +75,13 @@
         </router-link>
       </nav>
       <div class="kenar-menu-spacer"></div>
-      <div class="kenar-menu-kullanici">
+      <router-link to="/profil" class="kenar-menu-kullanici kenar-menu-kullanici-link">
         <div class="kenar-menu-avatar">{{ baslangicHarfleri(adSoyad) }}</div>
         <div v-if="!daraltilmis">
           <div class="kenar-menu-isim">{{ adSoyad }}</div>
           <div class="kenar-menu-rol">{{ rolEtiketi }}</div>
         </div>
-      </div>
+      </router-link>
       <button class="btn btn-cikis kenar-menu-cikis" @click="cikisYap" :title="daraltilmis ? 'Cikis Yap' : undefined">
         <span v-if="!daraltilmis">Cikis Yap</span>
         <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -129,6 +129,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import Logo from '../components/Logo.vue';
+import { API_URL } from '../api';
 
 const kayitlar = ref<any[]>([]);
 const yukleniyor = ref(true);
@@ -172,7 +173,7 @@ onMounted(async () => {
   }
 
   try {
-    const response = await fetch('http://localhost:3000/audit-log', {
+    const response = await fetch(`${API_URL}/audit-log`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 

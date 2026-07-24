@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: finguard-frontend
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: VITE_API_URL
+        sync: false
+    plan: free
