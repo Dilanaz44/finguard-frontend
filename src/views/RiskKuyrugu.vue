@@ -113,6 +113,7 @@
               <th>Hedef</th>
               <th>Risk Skoru</th>
               <th>Durum</th>
+              <th>Atanan</th>
               <th>Tarih</th>
               <th>Aksiyon</th>
             </tr>
@@ -140,6 +141,7 @@
                   </span>
                   <span v-else class="ilk-onay-rozeti ilk-onay-yok">Onay bekliyor</span>
                 </td>
+                <td>{{ islem.atananAnalist?.adSoyad || '-' }}</td>
                 <td>{{ formatTarih(islem.olusturmaTarihi) }}</td>
                 <td>
                   <div v-if="rol === 'kidemli_analist'" class="aksiyon-butonlari">
@@ -165,7 +167,7 @@
                 </td>
               </tr>
               <tr v-if="islem.riskNedenleri && islem.riskNedenleri.length" class="neden-satiri">
-                <td colspan="8">
+                <td colspan="9">
                   <strong>Risk skoruna sebep olan kurallar:</strong>
                   <ul>
                     <li v-for="(neden, i) in islem.riskNedenleri" :key="i">{{ neden }}</li>

@@ -284,6 +284,13 @@
                         <option value="kapatildi">Kapatildi</option>
                       </select>
                     </div>
+                    <div class="inceleme-satiri">
+                      <label>Atanan:</label>
+                      <select :value="islem.atananAnalistId || ''" @change="atamaGuncelle(islem, ($event.target as HTMLSelectElement).value)">
+                        <option value="">Atanmadi</option>
+                        <option v-for="a in analistler" :key="a.id" :value="a.id">{{ a.adSoyad }}</option>
+                      </select>
+                    </div>
                     <textarea v-model="duzenlemeNot" placeholder="Analist notu ekle..." rows="3"></textarea>
                     <button class="btn btn-kaydet" @click.stop="notKaydet(islem)" :disabled="kaydediliyor">
                       {{ kaydediliyor ? 'Kaydediliyor...' : 'Kaydet' }}
@@ -295,6 +302,21 @@
                     <p v-if="islem.incelemeAnalist" class="inceleme-bilgi">
                       Son inceleme: {{ islem.incelemeAnalist.adSoyad }} ({{ formatTarih(islem.incelemeTarihi) }})
                     </p>
+
+                    <div class="not-timeline">
+                      <strong>Not Gecmisi</strong>
+                      <ul v-if="islem.notlar && islem.notlar.length">
+                        <li v-for="not in islem.notlar" :key="not.id">
+                          <span class="not-meta">{{ not.analist?.adSoyad }} · {{ formatTarih(not.tarih) }}</span>
+                          <p>{{ not.not }}</p>
+                        </li>
+                      </ul>
+                      <p v-else class="not-yok">Henuz not eklenmemis.</p>
+                      <textarea v-model="yeniNotMetni[islem.id]" placeholder="Yeni not ekle..." rows="2"></textarea>
+                      <button class="btn btn-kaydet" @click.stop="notEkle(islem)" :disabled="notEkleniyor[islem.id]">
+                        {{ notEkleniyor[islem.id] ? 'Ekleniyor...' : 'Not Ekle' }}
+                      </button>
+                    </div>
                   </div>
                 </td>
               </tr>
@@ -330,6 +352,9 @@ const kycMesaj = ref('');
 const pepSecimi = ref(false);
 const pepGuncelleniyor = ref(false);
 const pepMesaj = ref('');
+const analistler = ref<any[]>([]);
+const yeniNotMetni = ref<Record<number, string>>({});
+const notEkleniyor = ref<Record<number, boolean>>({});
 const hesapHaritasi = ref<Record<number, any>>({});
 const yukleniyor = ref(true);
 const hata = ref('');
@@ -558,6 +583,75 @@ async function pepGuncelle() {
   }
 }
 
+async function atamaGuncelle(islem: any, secilenDeger: string) {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    router.push('/login');
+    return;
+  }
+
+  const analistId = secilenDeger === '' ? null : Number(secilenDeger);
+
+  try {
+    const response = await fetch(`${API_URL}/islemler/${islem.id}/ata`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ analistId }),
+    });
+
+    if (!response.ok) {
+      hata.value = 'Atama guncellenemedi';
+      return;
+    }
+
+    const guncellenenIslem = await response.json();
+    const index = islemler.value.findIndex((i) => i.id === islem.id);
+    if (index !== -1) {
+      islemler.value[index] = { ...islemler.value[index], ...guncellenenIslem };
+    }
+  } catch (err) {
+    hata.value = 'Sunucuya baglanilamadi';
+  }
+}
+
+async function notEkle(islem: any) {
+  const metin = (yeniNotMetni.value[islem.id] || '').trim();
+  if (!metin) return;
+
+  const token = localStorage.getItem('token');
+  if (!token) {
+    router.push('/login');
+    return;
+  }
+
+  notEkleniyor.value[islem.id] = true;
+
+  try {
+    const response = await fetch(`${API_URL}/islemler/${islem.id}/notlar`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ not: metin }),
+    });
+
+    if (!response.ok) {
+      hata.value = 'Not eklenemedi';
+      return;
+    }
+
+    const yeniNot = await response.json();
+    const index = islemler.value.findIndex((i) => i.id === islem.id);
+    if (index !== -1) {
+      const guncelNotlar = [yeniNot, ...(islemler.value[index].notlar || [])];
+      islemler.value[index] = { ...islemler.value[index], notlar: guncelNotlar };
+    }
+    yeniNotMetni.value[islem.id] = '';
+  } catch (err) {
+    hata.value = 'Sunucuya baglanilamadi';
+  } finally {
+    delete notEkleniyor.value[islem.id];
+  }
+}
+
 function formatTarih(tarih: string) {
   if (!tarih) return '';
   return new Date(tarih).toLocaleString('tr-TR');
@@ -718,13 +812,14 @@ async function verileriYukle() {
   const musteriId = route.params.id;
 
   try {
-    const [musterilerRes, islemlerRes, hesaplarRes] = await Promise.all([
+    const [musterilerRes, islemlerRes, hesaplarRes, analistlerRes] = await Promise.all([
       fetch(`${API_URL}/musteriler`, { headers: { Authorization: `Bearer ${token}` } }),
       fetch(`${API_URL}/islemler?musteriId=${musteriId}&sayfa=${sayfa.value}&limit=20`, { headers: { Authorization: `Bearer ${token}` } }),
       fetch(`${API_URL}/hesaplar`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${API_URL}/analistler`, { headers: { Authorization: `Bearer ${token}` } }),
     ]);
 
-    if (!musterilerRes.ok || !islemlerRes.ok || !hesaplarRes.ok) {
+    if (!musterilerRes.ok || !islemlerRes.ok || !hesaplarRes.ok || !analistlerRes.ok) {
       hata.value = 'Veriler yuklenemedi';
       yukleniyor.value = false;
       return;
@@ -746,6 +841,8 @@ async function verileriYukle() {
       harita[h.id] = h;
     });
     hesapHaritasi.value = harita;
+
+    analistler.value = await analistlerRes.json();
   } catch (err) {
     hata.value = 'Sunucuya baglanilamadi';
   } finally {
@@ -1102,6 +1199,56 @@ tr.neden-satiri li {
   border: 1px solid #cbd5e1;
   border-radius: 6px;
   padding: 6px 8px;
+}
+
+.not-timeline {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.not-timeline ul {
+  list-style: none;
+  margin: 8px 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.not-timeline li {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.not-meta {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.not-timeline li p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #334155;
+}
+
+.not-yok {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 8px 0;
+}
+
+.not-timeline textarea {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  resize: vertical;
+  margin-bottom: 8px;
 }
 
 .inceleme-formu textarea {
