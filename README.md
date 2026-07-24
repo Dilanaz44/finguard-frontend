@@ -1,5 +1,8 @@
 # FinGuard - Frontend
 
+🔗 **Canlı Demo:** https://finguard-frontend-tobe.onrender.com
+(Demo girişi: `analist@example.com` / `sifre123` — ücretsiz hosting olduğu için ilk açılış birkaç saniye sürebilir.)
+
 FinGuard'ın analist arayüzü. Analistlerin giriş yapıp müşterileri, hesapları
 ve işlemleri izlediği, riskli işlemleri incelediği panel. Backend/API ve risk
 motoru için `finguard-backend` reposuna bakın.
