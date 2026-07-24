@@ -154,6 +154,11 @@
             <input type="number" min="1" v-model.number="ayarlar.yapilandirmaEsikTutar" />
             <span class="ayar-aciklama">Ayni musterinin siklik penceresi icindeki islemlerinin toplami bu tutari gecerse supheli sayilir</span>
           </div>
+          <div class="ayar-satiri">
+            <label>PEP risk puani</label>
+            <input type="number" min="0" v-model.number="ayarlar.pepRiskPuan" />
+            <span class="ayar-aciklama">Hesap sahibi PEP (siyasi nufuz sahibi kisi) olarak isaretliyse eklenecek puan</span>
+          </div>
 
           <button type="submit" class="btn btn-kaydet" :disabled="kaydediliyor">
             {{ kaydediliyor ? 'Kaydediliyor...' : 'Kaydet' }}

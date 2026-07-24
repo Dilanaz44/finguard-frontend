@@ -109,6 +109,14 @@
             </select>
             <span v-if="kycMesaj" class="kaydet-onay">{{ kycMesaj }}</span>
           </div>
+          <div v-if="musteri" class="kyc-satiri">
+            <span class="kyc-rozet" :class="{ 'kyc-yuksek': musteri.pepMi }">PEP: {{ musteri.pepMi ? 'Evet' : 'Hayir' }}</span>
+            <label class="pep-checkbox-etiket">
+              <input type="checkbox" v-model="pepSecimi" @change="pepGuncelle" :disabled="pepGuncelleniyor" />
+              Siyasi nufuz sahibi kisi
+            </label>
+            <span v-if="pepMesaj" class="kaydet-onay">{{ pepMesaj }}</span>
+          </div>
         </div>
         <button v-if="!yukleniyor && islemler.length > 0" class="btn" @click="csvIndir">CSV Indir</button>
       </div>
@@ -319,6 +327,9 @@ const musteri = ref<any>(null);
 const kycSecimi = ref('dusuk');
 const kycGuncelleniyor = ref(false);
 const kycMesaj = ref('');
+const pepSecimi = ref(false);
+const pepGuncelleniyor = ref(false);
+const pepMesaj = ref('');
 const hesapHaritasi = ref<Record<number, any>>({});
 const yukleniyor = ref(true);
 const hata = ref('');
@@ -512,6 +523,41 @@ async function kycGuncelle() {
   }
 }
 
+async function pepGuncelle() {
+  if (!musteri.value) return;
+  const token = localStorage.getItem('token');
+  if (!token) {
+    router.push('/login');
+    return;
+  }
+
+  pepGuncelleniyor.value = true;
+
+  try {
+    const response = await fetch(`${API_URL}/musteriler/${musteri.value.id}/pep`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ pepMi: pepSecimi.value }),
+    });
+
+    if (!response.ok) {
+      hata.value = 'PEP durumu guncellenemedi';
+      return;
+    }
+
+    const guncellenenMusteri = await response.json();
+    musteri.value = { ...musteri.value, pepMi: guncellenenMusteri.pepMi };
+    pepMesaj.value = 'Kaydedildi ✓';
+    setTimeout(() => {
+      pepMesaj.value = '';
+    }, 3000);
+  } catch (err) {
+    hata.value = 'Sunucuya baglanilamadi';
+  } finally {
+    pepGuncelleniyor.value = false;
+  }
+}
+
 function formatTarih(tarih: string) {
   if (!tarih) return '';
   return new Date(tarih).toLocaleString('tr-TR');
@@ -687,6 +733,7 @@ async function verileriYukle() {
     const musteriler = await musterilerRes.json();
     musteri.value = musteriler.find((m: any) => String(m.id) === String(musteriId));
     kycSecimi.value = musteri.value?.riskSeviyesi || 'dusuk';
+    pepSecimi.value = musteri.value?.pepMi || false;
 
     const islemlerYaniti = await islemlerRes.json();
     islemler.value = islemlerYaniti.veri;
@@ -927,6 +974,15 @@ tr.neden-satiri li {
   font-weight: 500;
   background: #f1f5f9;
   color: #475569;
+}
+
+.pep-checkbox-etiket {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #475569;
+  cursor: pointer;
 }
 
 .kyc-orta {
