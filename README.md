@@ -62,3 +62,13 @@ Detaylar için backend reposunun README'sine bakın.
 `.github/workflows/ci.yml`, her push/PR'da bağımlılıkları kurar, `npm run
 build` ile tip kontrolü + derlemeyi doğrular ve Docker imajının başarıyla
 build olduğunu kontrol eder.
+
+## Bilinen sınırlamalar
+
+- **Token saklama:** Giriş sonrası JWT (`localStorage.setItem('token', ...)`,
+  bkz. `src/views/Login.vue`) tarayıcının `localStorage`'ında tutuluyor. Bu,
+  sayfada XSS (kötü niyetli script çalıştırma) açığı olması durumunda token'ın
+  çalınabileceği anlamına gelir — `httpOnly` cookie'ye göre daha zayıf bir
+  yöntemdir. Bu demo projede bilinçli bir basitlik tercihi; production'a
+  taşınacak bir sistemde token'ın backend tarafından `httpOnly` + `Secure`
+  cookie olarak set edilmesi önerilir.
