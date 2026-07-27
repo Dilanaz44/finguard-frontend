@@ -159,6 +159,11 @@
             <input type="number" min="0" v-model.number="ayarlar.pepRiskPuan" />
             <span class="ayar-aciklama">Hesap sahibi PEP (siyasi nufuz sahibi kisi) olarak isaretliyse eklenecek puan</span>
           </div>
+          <div class="ayar-satiri">
+            <label>Anomali z-skoru esigi</label>
+            <input type="number" step="0.1" min="0.1" v-model.number="ayarlar.anomaliZSkoruEsigi" />
+            <span class="ayar-aciklama">Islem tutari, musterinin ortalamasindan kac standart sapma uzaklastiginda supheli sayilir</span>
+          </div>
 
           <button type="submit" class="btn btn-kaydet" :disabled="kaydediliyor">
             {{ kaydediliyor ? 'Kaydediliyor...' : 'Kaydet' }}
