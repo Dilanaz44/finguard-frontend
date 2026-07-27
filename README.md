@@ -7,6 +7,32 @@ FinGuard'ın analist arayüzü. Analistlerin giriş yapıp müşterileri, hesapl
 ve işlemleri izlediği, riskli işlemleri incelediği panel. Backend/API ve risk
 motoru için `finguard-backend` reposuna bakın.
 
+## Ekran görüntüleri
+
+| Dashboard | Risk Kuyruğu |
+|---|---|
+| ![Dashboard](docs/screenshots/dashboard.png) | ![Risk Kuyrugu](docs/screenshots/risk-kuyrugu.png) |
+
+| Bağlantı Grafiği | Denetim İzi |
+|---|---|
+| ![Baglanti Grafigi](docs/screenshots/baglanti-grafi.png) | ![Denetim Izi](docs/screenshots/denetim-izi.png) |
+
+## Nasıl çalışır
+
+```mermaid
+flowchart LR
+    A["Analist (tarayıcı)"] --> B["Vue Router"]
+    B --> C["View bileşeni (orn. Dashboard.vue)"]
+    C -->|"fetch + JWT"| D["Backend API"]
+    D --> C
+    C --> E["Ekranda goster"]
+```
+
+Her sayfa (`src/views/*.vue`) `onMounted` sırasında `localStorage`'daki JWT
+token'ı okuyup backend'e `fetch` ile istek atar, dönen veriyi kendi
+`ref`/`computed`'larında tutar. Merkezi bir state yönetimi (Vuex/Pinia) yok -
+her sayfa kendi verisini kendi yönetiyor.
+
 ## Ekranlar
 
 - **Login / Şifremi Unuttum / Şifre Sıfırla** — sadece analistler giriş
