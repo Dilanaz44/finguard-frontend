@@ -2,38 +2,44 @@
   <div class="login-sayfa">
     <div class="giris-karti">
       <h2>Sifremi Unuttum</h2>
-      <p style="color: #64748b; font-size: 14px;">Email adresini gir, sifirlama linki gonderelim.</p>
+      <p style="color: #64748b; font-size: 14px">
+        Email adresini gir, sifirlama linki gonderelim.
+      </p>
       <form @submit.prevent="gonder">
         <div class="input-grubu">
           <input v-model="email" type="email" placeholder="Email" required />
         </div>
         <button type="submit" class="giris-butonu">LINK GONDER</button>
-        <p v-if="mesaj" style="margin-top: 12px; color: #166534;">{{ mesaj }}</p>
+        <p v-if="mesaj" style="margin-top: 12px; color: #166534">{{ mesaj }}</p>
       </form>
-      <router-link to="/login" style="display: block; margin-top: 16px; font-size: 14px;">Giris ekranina don</router-link>
+      <router-link
+        to="/login"
+        style="display: block; margin-top: 16px; font-size: 14px"
+        >Giris ekranina don</router-link
+      >
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { API_URL } from '../api';
+import { ref } from "vue";
+import { API_URL } from "../api";
 
-const email = ref('');
-const mesaj = ref('');
+const email = ref("");
+const mesaj = ref("");
 
 async function gonder() {
-  mesaj.value = '';
+  mesaj.value = "";
   try {
     const response = await fetch(`${API_URL}/sifremi-unuttum`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: email.value }),
     });
     const veri = await response.json();
     mesaj.value = veri.mesaj;
-  } catch (err) {
-    mesaj.value = 'Sunucuya baglanilamadi';
+  } catch {
+    mesaj.value = "Sunucuya baglanilamadi";
   }
 }
 </script>

@@ -11,7 +11,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import {
   Chart,
   CategoryScale,
@@ -24,11 +24,23 @@ import {
   Title,
   Tooltip,
   Legend,
-} from 'chart.js';
+} from "chart.js";
+import type { Islem } from "../types";
 
-Chart.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, LineController, BarController, Title, Tooltip, Legend);
+Chart.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  LineController,
+  BarController,
+  Title,
+  Tooltip,
+  Legend,
+);
 
-const props = defineProps<{ islemler: any[] }>();
+const props = defineProps<{ islemler: Islem[] }>();
 const gunlukHacim = computed(() => {
   const gunSayisi = 14;
   const etiketler: string[] = [];
@@ -39,19 +51,25 @@ const gunlukHacim = computed(() => {
     gun.setDate(gun.getDate() - i);
     const gunMetni = gun.toDateString();
 
-    etiketler.push(gun.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit' }));
-    veriler.push(props.islemler.filter((islem) => new Date(islem.olusturmaTarihi).toDateString() === gunMetni).length);
+    etiketler.push(
+      gun.toLocaleDateString("tr-TR", { day: "2-digit", month: "2-digit" }),
+    );
+    veriler.push(
+      props.islemler.filter(
+        (islem) => new Date(islem.olusturmaTarihi).toDateString() === gunMetni,
+      ).length,
+    );
   }
 
   return { etiketler, veriler };
 });
 const riskDagilimi = computed(() => {
   const bantlar = [
-    { etiket: '0-20', min: 0, max: 20 },
-    { etiket: '20-40', min: 20, max: 40 },
-    { etiket: '40-60', min: 40, max: 60 },
-    { etiket: '60-80', min: 60, max: 80 },
-    { etiket: '80-100', min: 80, max: 101 },
+    { etiket: "0-20", min: 0, max: 20 },
+    { etiket: "20-40", min: 20, max: 40 },
+    { etiket: "40-60", min: 40, max: 60 },
+    { etiket: "60-80", min: 60, max: 80 },
+    { etiket: "80-100", min: 80, max: 101 },
   ];
 
   const etiketler = bantlar.map((b) => b.etiket);
@@ -76,17 +94,19 @@ function grafikleriCiz() {
 
   if (hacimCanvas.value) {
     hacimChart = new Chart(hacimCanvas.value, {
-      type: 'line',
+      type: "line",
       data: {
         labels: gunlukHacim.value.etiketler,
-        datasets: [{
-          label: 'Islem Sayisi',
-          data: gunlukHacim.value.veriler,
-          borderColor: '#0d9488',
-          backgroundColor: 'rgba(13, 148, 136, 0.1)',
-          fill: true,
-          tension: 0.3,
-        }],
+        datasets: [
+          {
+            label: "Islem Sayisi",
+            data: gunlukHacim.value.veriler,
+            borderColor: "#0d9488",
+            backgroundColor: "rgba(13, 148, 136, 0.1)",
+            fill: true,
+            tension: 0.3,
+          },
+        ],
       },
       options: {
         responsive: true,
@@ -98,10 +118,16 @@ function grafikleriCiz() {
 
   if (riskCanvas.value) {
     riskChart = new Chart(riskCanvas.value, {
-      type: 'bar',
+      type: "bar",
       data: {
         labels: riskDagilimi.value.etiketler,
-        datasets: [{ label: 'Islem Sayisi', data: riskDagilimi.value.veriler, backgroundColor: '#1e40af' }],
+        datasets: [
+          {
+            label: "Islem Sayisi",
+            data: riskDagilimi.value.veriler,
+            backgroundColor: "#1e40af",
+          },
+        ],
       },
       options: {
         responsive: true,

@@ -4,57 +4,68 @@
       <h2>Sifre Sifirla</h2>
       <form @submit.prevent="sifirla">
         <div class="input-grubu">
-          <input v-model="yeniSifre" type="password" placeholder="Yeni Sifre" required />
+          <input
+            v-model="yeniSifre"
+            type="password"
+            placeholder="Yeni Sifre"
+            required
+          />
         </div>
         <button type="submit" class="giris-butonu">SIFREYI GUNCELLE</button>
-        <p v-if="mesaj" style="margin-top: 12px; color: #166534;">{{ mesaj }}</p>
-        <p v-if="hata" class="hata-mesaj" style="margin-top: 12px;">{{ hata }}</p>
+        <p v-if="mesaj" style="margin-top: 12px; color: #166534">{{ mesaj }}</p>
+        <p v-if="hata" class="hata-mesaj" style="margin-top: 12px">
+          {{ hata }}
+        </p>
       </form>
-      <router-link to="/login" style="display: block; margin-top: 16px; font-size: 14px;">Giris ekranina don</router-link>
+      <router-link
+        to="/login"
+        style="display: block; margin-top: 16px; font-size: 14px"
+        >Giris ekranina don</router-link
+      >
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { API_URL } from '../api';
-import { useRoute, useRouter } from 'vue-router';
+import { ref } from "vue";
+import { API_URL } from "../api";
+import { useRoute, useRouter } from "vue-router";
 
-const yeniSifre = ref('');
-const mesaj = ref('');
-const hata = ref('');
+const yeniSifre = ref("");
+const mesaj = ref("");
+const hata = ref("");
 const route = useRoute();
 const router = useRouter();
 
 async function sifirla() {
-  mesaj.value = '';
-  hata.value = '';
+  mesaj.value = "";
+  hata.value = "";
 
   const token = route.query.token;
 
-  if (typeof token !== 'string') {
-    hata.value = 'Gecersiz link, token bulunamadi';
+  if (typeof token !== "string") {
+    hata.value = "Gecersiz link, token bulunamadi";
     return;
   }
 
   try {
     const response = await fetch(`${API_URL}/sifre-sifirla`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token, yeniSifre: yeniSifre.value }),
     });
 
     const veri = await response.json();
 
     if (!response.ok) {
-      hata.value = veri.mesaj || 'Bir hata olustu';
+      hata.value = veri.mesaj || "Bir hata olustu";
       return;
     }
 
-    mesaj.value = veri.mesaj + ' Giris sayfasina yonlendiriliyorsun...';
-    setTimeout(() => router.push('/login'), 2000);
-  } catch (err) {
-    hata.value = 'Sunucuya baglanilamadi';
+    mesaj.value = veri.mesaj + " Giris sayfasina yonlendiriliyorsun...";
+    setTimeout(() => router.push("/login"), 2000);
+  } catch {
+    hata.value = "Sunucuya baglanilamadi";
   }
 }
 </script>

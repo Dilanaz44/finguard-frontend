@@ -1,7 +1,7 @@
 <template>
   <div class="login-sayfa">
     <div class="giris-karti">
-      <Logo :size="40" style="margin-bottom: 24px;" />
+      <Logo :size="40" style="margin-bottom: 24px" />
 
       <h2>Analist Girisi</h2>
 
@@ -10,14 +10,37 @@
           <input v-model="email" type="email" placeholder="Email" required />
         </div>
         <div class="input-grubu">
-          <input v-model="sifre" :type="sifreGoster ? 'text' : 'password'" placeholder="Sifre" required />
+          <input
+            v-model="sifre"
+            :type="sifreGoster ? 'text' : 'password'"
+            placeholder="Sifre"
+            required
+          />
           <span class="goz-ikon" @click="sifreGoster = !sifreGoster">
-            <svg v-if="!sifreGoster" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#64748b" stroke-width="2">
+            <svg
+              v-if="!sifreGoster"
+              viewBox="0 0 24 24"
+              width="18"
+              height="18"
+              fill="none"
+              stroke="#64748b"
+              stroke-width="2"
+            >
               <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
               <circle cx="12" cy="12" r="3" />
             </svg>
-            <svg v-else viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#64748b" stroke-width="2">
-              <path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a18.5 18.5 0 0 1 5.06-5.94M9.9 4.24A10.94 10.94 0 0 1 12 5c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24" />
+            <svg
+              v-else
+              viewBox="0 0 24 24"
+              width="18"
+              height="18"
+              fill="none"
+              stroke="#64748b"
+              stroke-width="2"
+            >
+              <path
+                d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a18.5 18.5 0 0 1 5.06-5.94M9.9 4.24A10.94 10.94 0 0 1 12 5c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"
+              />
               <line x1="1" y1="1" x2="23" y2="23" />
             </svg>
           </span>
@@ -26,12 +49,25 @@
         <button type="submit" class="giris-butonu">GIRIS YAP</button>
         <p v-if="hata" class="hata-mesaj">{{ hata }}</p>
       </form>
-      <router-link to="/sifremi-unuttum" class="unuttum-linki">Sifremi Unuttum</router-link>
+      <router-link to="/sifremi-unuttum" class="unuttum-linki"
+        >Sifremi Unuttum</router-link
+      >
 
       <div class="guven-rozeti">
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#0d9488" stroke-width="2">
+        <svg
+          viewBox="0 0 24 24"
+          width="14"
+          height="14"
+          fill="none"
+          stroke="#0d9488"
+          stroke-width="2"
+        >
           <path d="M12 2 L20 6 L20 12 Q20 18 12 22 Q4 18 4 12 L4 6 Z" />
-          <path d="M8.5 12 L11 14.5 L15.5 9.5" stroke-linecap="round" stroke-linejoin="round" />
+          <path
+            d="M8.5 12 L11 14.5 L15.5 9.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
         </svg>
         Guvenli baglanti, 256-bit sifreleme
       </div>
@@ -40,40 +76,40 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import Logo from '../components/Logo.vue';
-import { API_URL } from '../api';
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import Logo from "../components/Logo.vue";
+import { API_URL } from "../api";
 
-const email = ref('');
-const sifre = ref('');
-const hata = ref('');
+const email = ref("");
+const sifre = ref("");
+const hata = ref("");
 const sifreGoster = ref(false);
 const router = useRouter();
 
 async function girisYap() {
-  hata.value = '';
+  hata.value = "";
   try {
     const response = await fetch(`${API_URL}/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: email.value, sifre: sifre.value }),
     });
 
     const veri = await response.json();
 
     if (!response.ok) {
-      hata.value = veri.mesaj || 'Giris basarisiz';
+      hata.value = veri.mesaj || "Giris basarisiz";
       return;
     }
 
-    localStorage.setItem('token', veri.token);
-    localStorage.setItem('rol', veri.rol);
-    localStorage.setItem('adSoyad', veri.adSoyad);
-    localStorage.setItem('analistId', String(veri.id));
-    router.push('/');
-  } catch (err) {
-    hata.value = 'Sunucuya baglanilamadi';
+    localStorage.setItem("token", veri.token);
+    localStorage.setItem("rol", veri.rol);
+    localStorage.setItem("adSoyad", veri.adSoyad);
+    localStorage.setItem("analistId", String(veri.id));
+    router.push("/");
+  } catch {
+    hata.value = "Sunucuya baglanilamadi";
   }
 }
 </script>
@@ -91,7 +127,7 @@ async function girisYap() {
 
 .login-sayfa::before,
 .login-sayfa::after {
-  content: '';
+  content: "";
   position: absolute;
   border-radius: 50%;
   filter: blur(70px);
@@ -140,7 +176,9 @@ async function girisYap() {
   border-radius: 9px;
   padding: 11px 14px;
   margin-bottom: 14px;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .input-grubu:focus-within {
@@ -175,7 +213,9 @@ async function girisYap() {
   letter-spacing: 0.4px;
   cursor: pointer;
   margin-top: 8px;
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
   box-shadow: 0 8px 20px rgba(13, 148, 136, 0.25);
 }
 

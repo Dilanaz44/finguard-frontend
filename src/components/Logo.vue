@@ -13,7 +13,17 @@
         stroke="url(#fgGrad)"
         stroke-width="4"
       />
-      <text x="50" y="60" text-anchor="middle" font-size="34" font-weight="800" fill="url(#fgGrad)" font-family="-apple-system, sans-serif">FG</text>
+      <text
+        x="50"
+        y="60"
+        text-anchor="middle"
+        font-size="34"
+        font-weight="800"
+        fill="url(#fgGrad)"
+        font-family="-apple-system, sans-serif"
+      >
+        FG
+      </text>
     </svg>
     <div v-if="!iconOnly" class="fg-logo-text">
       <span class="fg-logo-baslik">FinGuard</span>
@@ -26,11 +36,14 @@
 </template>
 
 <script setup lang="ts">
-withDefaults(defineProps<{ size?: number; iconOnly?: boolean; altbaslik?: boolean }>(), {
-  size: 36,
-  iconOnly: false,
-  altbaslik: true,
-});
+withDefaults(
+  defineProps<{ size?: number; iconOnly?: boolean; altbaslik?: boolean }>(),
+  {
+    size: 36,
+    iconOnly: false,
+    altbaslik: true,
+  },
+);
 </script>
 
 <style scoped>
