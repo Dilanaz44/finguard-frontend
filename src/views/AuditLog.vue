@@ -43,16 +43,13 @@
 import { ref, onMounted } from "vue";
 import Sidebar from "../components/Sidebar.vue";
 import { useApi } from "../composables/useApi";
+import { formatTarih } from "../utils/islemGoruntuleme";
 import type { AuditKaydi } from "../types";
 
 const { apiFetch } = useApi();
 const kayitlar = ref<AuditKaydi[]>([]);
 const yukleniyor = ref(true);
 const hata = ref("");
-
-function formatTarih(tarih: string) {
-  return new Date(tarih).toLocaleString("tr-TR");
-}
 
 onMounted(async () => {
   try {

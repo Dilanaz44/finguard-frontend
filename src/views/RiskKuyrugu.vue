@@ -148,6 +148,12 @@ import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import Sidebar from "../components/Sidebar.vue";
 import { useApi } from "../composables/useApi";
+import {
+  formatTarih,
+  formatTutar,
+  gonderenGoster,
+  aliciGoster as aliciGosterBase,
+} from "../utils/islemGoruntuleme";
 import type { Islem, Hesap } from "../types";
 
 const { apiFetch } = useApi();
@@ -161,37 +167,8 @@ const analistId = Number(localStorage.getItem("analistId"));
 
 const islemAksiyonDurumu = ref<Record<number, string>>({});
 
-function formatTarih(tarih: string) {
-  return new Date(tarih).toLocaleString("tr-TR");
-}
-
-function formatTutar(tutar: string | number) {
-  return Number(tutar).toLocaleString("tr-TR", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-}
-
-function numarayiMaskele(numara: string | null | undefined, yedekId: number) {
-  if (!numara) return `#${yedekId}`;
-  const basi = numara.slice(0, 4);
-  const sonu = numara.slice(-4);
-  return `${basi} **** **** **** ${sonu}`;
-}
-
-function gonderenGoster(islem: Islem) {
-  const ad = islem.hesap?.musteri?.adSoyad || "Bilinmiyor";
-  const numara = numarayiMaskele(islem.hesap?.hesapNumarasi, islem.hesapId);
-  return `${ad} (${numara})`;
-}
-
 function aliciGoster(islem: Islem) {
-  if (!islem.aliciHesapId) return "-";
-  const aliciHesap = hesapHaritasi.value[islem.aliciHesapId];
-  if (!aliciHesap) return `#${islem.aliciHesapId}`;
-  const ad = aliciHesap.musteri?.adSoyad || "Bilinmiyor";
-  const numara = numarayiMaskele(aliciHesap.hesapNumarasi, islem.aliciHesapId);
-  return `${ad} (${numara})`;
+  return aliciGosterBase(islem, hesapHaritasi.value);
 }
 
 const bekleyenIslemler = computed(() => {
