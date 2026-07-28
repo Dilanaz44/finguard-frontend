@@ -7,16 +7,30 @@
 
       <form @submit.prevent="girisYap">
         <div class="input-grubu">
-          <input v-model="email" type="email" placeholder="Email" required />
+          <label for="email-input" class="sr-only">Email</label>
+          <input
+            id="email-input"
+            v-model="email"
+            type="email"
+            placeholder="Email"
+            required
+          />
         </div>
         <div class="input-grubu">
+          <label for="sifre-input" class="sr-only">Sifre</label>
           <input
+            id="sifre-input"
             v-model="sifre"
             :type="sifreGoster ? 'text' : 'password'"
             placeholder="Sifre"
             required
           />
-          <span class="goz-ikon" @click="sifreGoster = !sifreGoster">
+          <button
+            type="button"
+            class="goz-ikon"
+            :aria-label="sifreGoster ? 'Sifreyi gizle' : 'Sifreyi goster'"
+            @click="sifreGoster = !sifreGoster"
+          >
             <svg
               v-if="!sifreGoster"
               viewBox="0 0 24 24"
@@ -43,7 +57,7 @@
               />
               <line x1="1" y1="1" x2="23" y2="23" />
             </svg>
-          </span>
+          </button>
         </div>
 
         <button type="submit" class="giris-butonu">GIRIS YAP</button>
@@ -202,6 +216,11 @@ async function girisYap() {
   cursor: pointer;
   margin-left: 8px;
   user-select: none;
+  background: none;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
 }
 
 .giris-butonu {
@@ -253,5 +272,17 @@ async function girisYap() {
   border-top: 1px solid #f1f5f9;
   font-size: 12px;
   color: #94a3b8;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 </style>
