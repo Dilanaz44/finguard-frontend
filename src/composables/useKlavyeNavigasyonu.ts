@@ -22,7 +22,11 @@ export function useKlavyeNavigasyonu<T extends { id: number }>(
     );
 
     // Cmd/Ctrl+Enter: not yazarken (textarea icindeyken) bile calissin, hizlica kaydetsin.
-    if (e.key === "Enter" && (e.metaKey || e.ctrlKey) && acikId.value !== null) {
+    if (
+      e.key === "Enter" &&
+      (e.metaKey || e.ctrlKey) &&
+      acikId.value !== null
+    ) {
       e.preventDefault();
       const acikOge = liste.value.find((i) => i.id === acikId.value);
       if (acikOge) kaydet(acikOge);
@@ -38,7 +42,9 @@ export function useKlavyeNavigasyonu<T extends { id: number }>(
     if (e.key === "ArrowDown") {
       e.preventDefault();
       const sonrakiIndex =
-        suankiIndex === -1 ? 0 : Math.min(suankiIndex + 1, liste.value.length - 1);
+        suankiIndex === -1
+          ? 0
+          : Math.min(suankiIndex + 1, liste.value.length - 1);
       satiriAc(liste.value[sonrakiIndex]!);
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
