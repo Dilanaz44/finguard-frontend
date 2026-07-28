@@ -4,7 +4,9 @@
       <h2>Sifre Sifirla</h2>
       <form @submit.prevent="sifirla">
         <div class="input-grubu">
+          <label for="yeni-sifre-input" class="sr-only">Yeni Sifre</label>
           <input
+            id="yeni-sifre-input"
             v-model="yeniSifre"
             type="password"
             placeholder="Yeni Sifre"
@@ -12,19 +14,14 @@
           />
         </div>
         <button type="submit" class="giris-butonu">SIFREYI GUNCELLE</button>
-        <p
-          v-if="mesaj"
-          style="margin-top: 12px; color: var(--color-success-text)"
-        >
+        <p v-if="mesaj" class="basari-mesaji">
           {{ mesaj }}
         </p>
-        <p v-if="hata" class="hata-mesaj" style="margin-top: 12px">
+        <p v-if="hata" class="hata-mesaj">
           {{ hata }}
         </p>
       </form>
-      <router-link
-        to="/login"
-        style="display: block; margin-top: 16px; font-size: 14px"
+      <router-link to="/login" class="geri-linki"
         >Giris ekranina don</router-link
       >
     </div>
@@ -131,5 +128,29 @@ async function sifirla() {
 
 .hata-mesaj {
   color: var(--color-danger-text-strong);
+  margin-top: 12px;
+}
+
+.basari-mesaji {
+  margin-top: 12px;
+  color: var(--color-success-text);
+}
+
+.geri-linki {
+  display: block;
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 </style>

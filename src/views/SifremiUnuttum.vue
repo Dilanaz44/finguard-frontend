@@ -2,24 +2,26 @@
   <div class="login-sayfa">
     <div class="giris-karti">
       <h2>Sifremi Unuttum</h2>
-      <p style="color: var(--color-text-muted); font-size: 14px">
+      <p class="aciklama-metni">
         Email adresini gir, sifirlama linki gonderelim.
       </p>
       <form @submit.prevent="gonder">
         <div class="input-grubu">
-          <input v-model="email" type="email" placeholder="Email" required />
+          <label for="email-input" class="sr-only">Email</label>
+          <input
+            id="email-input"
+            v-model="email"
+            type="email"
+            placeholder="Email"
+            required
+          />
         </div>
         <button type="submit" class="giris-butonu">LINK GONDER</button>
-        <p
-          v-if="mesaj"
-          style="margin-top: 12px; color: var(--color-success-text)"
-        >
+        <p v-if="mesaj" class="basari-mesaji">
           {{ mesaj }}
         </p>
       </form>
-      <router-link
-        to="/login"
-        style="display: block; margin-top: 16px; font-size: 14px"
+      <router-link to="/login" class="geri-linki"
         >Giris ekranina don</router-link
       >
     </div>
@@ -101,5 +103,33 @@ async function gonder() {
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
+}
+
+.aciklama-metni {
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.basari-mesaji {
+  margin-top: 12px;
+  color: var(--color-success-text);
+}
+
+.geri-linki {
+  display: block;
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 </style>
