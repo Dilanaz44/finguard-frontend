@@ -154,6 +154,7 @@ import {
   gonderenGoster,
   aliciGoster as aliciGosterBase,
 } from "../utils/islemGoruntuleme";
+import { onayBekliyorMu } from "../utils/islemDurumlari";
 import type { Islem, Hesap } from "../types";
 
 const { apiFetch } = useApi();
@@ -173,7 +174,7 @@ function aliciGoster(islem: Islem) {
 
 const bekleyenIslemler = computed(() => {
   return islemler.value
-    .filter((i) => ["beklemede", "ilk_onay_verildi"].includes(i.islemDurumu))
+    .filter(onayBekliyorMu)
     .sort((a, b) => (b.riskSkoru || 0) - (a.riskSkoru || 0));
 });
 

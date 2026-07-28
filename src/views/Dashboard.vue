@@ -158,6 +158,7 @@ import { ref, computed, onMounted } from "vue";
 import Sidebar from "../components/Sidebar.vue";
 import DashboardGrafikleri from "../components/DashboardGrafikleri.vue";
 import { useApi } from "../composables/useApi";
+import { onayBekliyorMu } from "../utils/islemDurumlari";
 import type { Musteri, Islem, Hesap } from "../types";
 
 const { apiFetch } = useApi();
@@ -194,9 +195,7 @@ const toplamBekleyen = computed(() => {
 });
 
 const askidaBekleyenSayisi = computed(() => {
-  return tumIslemler.value.filter((i) =>
-    ["beklemede", "ilk_onay_verildi"].includes(i.islemDurumu),
-  ).length;
+  return tumIslemler.value.filter(onayBekliyorMu).length;
 });
 
 const toplamIslemSayisi = computed(() => tumIslemler.value.length);
