@@ -708,29 +708,6 @@ tr.neden-satiri li {
   font-weight: 600;
 }
 
-.yukleniyor-satiri {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--color-text-muted);
-  font-size: 14px;
-}
-
-.spinner {
-  width: 14px;
-  height: 14px;
-  border: 2px solid var(--color-border-input);
-  border-top-color: var(--color-primary);
-  border-radius: 50%;
-  animation: spinner-donme 0.7s linear infinite;
-}
-
-@keyframes spinner-donme {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .inceleme-bilgi {
   margin: 8px 0 0;
   font-size: 12px;

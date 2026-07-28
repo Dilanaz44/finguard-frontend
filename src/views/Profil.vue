@@ -126,22 +126,6 @@ async function sifreDegistir() {
 </script>
 
 <style scoped>
-.sayfa-baslik {
-  margin-bottom: 22px;
-}
-
-.sayfa-baslik h1 {
-  font-size: 24px;
-  color: var(--color-text);
-  margin: 0 0 4px;
-}
-
-.sayfa-baslik p {
-  color: var(--color-text-muted);
-  margin: 0;
-  font-size: 14px;
-}
-
 .card h2 {
   font-size: 16px;
   color: var(--color-text);

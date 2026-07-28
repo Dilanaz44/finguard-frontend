@@ -260,45 +260,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.sayfa-baslik {
-  margin-bottom: 22px;
-}
-
-.sayfa-baslik h1 {
-  font-size: 24px;
-  color: var(--color-text);
-  margin: 0 0 4px;
-}
-
-.sayfa-baslik p {
-  color: var(--color-text-muted);
-  margin: 0;
-  font-size: 14px;
-}
-
-.yukleniyor-satiri {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--color-text-muted);
-  font-size: 14px;
-}
-
-.spinner {
-  width: 14px;
-  height: 14px;
-  border: 2px solid var(--color-border-input);
-  border-top-color: var(--color-primary);
-  border-radius: 50%;
-  animation: spinner-donme 0.7s linear infinite;
-}
-
-@keyframes spinner-donme {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .halka-uyarisi {
   display: flex;
   align-items: center;
