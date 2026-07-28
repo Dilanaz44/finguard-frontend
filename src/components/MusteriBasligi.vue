@@ -155,3 +155,63 @@ async function pepGuncelle() {
   }
 }
 </script>
+
+<style scoped>
+.sayfa-baslik {
+  margin-bottom: 22px;
+}
+
+.sayfa-baslik h1 {
+  font-size: 24px;
+  color: var(--color-text);
+  margin: 0 0 4px;
+}
+
+.sayfa-baslik p {
+  color: var(--color-text-muted);
+  margin: 0;
+  font-size: 14px;
+}
+
+.kyc-satiri {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.kyc-rozet {
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-weight: 500;
+  background: var(--color-surface-hover);
+  color: var(--color-text-secondary);
+}
+
+.pep-checkbox-etiket {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.kyc-orta {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+}
+
+.kyc-yuksek {
+  background: var(--color-danger-bg);
+  color: var(--color-danger-text);
+}
+
+.kaydet-onay {
+  margin-left: 10px;
+  color: var(--color-success-text);
+  font-size: 13px;
+  font-weight: 600;
+}
+</style>

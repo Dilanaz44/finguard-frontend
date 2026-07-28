@@ -85,3 +85,69 @@ defineProps<{
   ortalamaRisk: string;
 }>();
 </script>
+
+<style scoped>
+.istatistik-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.istatistik-karti {
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.istatistik-ikon {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.ikon-mavi {
+  background: #dbeafe;
+  color: var(--color-secondary);
+}
+
+.ikon-kirmizi {
+  background: var(--color-danger-bg);
+  color: var(--color-danger-text);
+}
+
+.ikon-turuncu {
+  background: #ffedd5;
+  color: #9a3412;
+}
+
+.ikon-yesil {
+  background: #ccfbf1;
+  color: var(--color-primary);
+}
+
+.istatistik-sayi {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.1;
+}
+
+.istatistik-etiket {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+@media (max-width: 800px) {
+  .istatistik-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+</style>

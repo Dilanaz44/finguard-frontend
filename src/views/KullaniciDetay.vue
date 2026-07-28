@@ -417,80 +417,6 @@ const ortalamaRisk = computed(() => {
   text-decoration: underline;
 }
 
-.sayfa-baslik {
-  margin-bottom: 22px;
-}
-
-.sayfa-baslik h1 {
-  font-size: 24px;
-  color: var(--color-text);
-  margin: 0 0 4px;
-}
-
-.sayfa-baslik p {
-  color: var(--color-text-muted);
-  margin: 0;
-  font-size: 14px;
-}
-
-.istatistik-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.istatistik-karti {
-  background: white;
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-  padding: 18px 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-}
-
-.istatistik-ikon {
-  width: 36px;
-  height: 36px;
-  border-radius: 9px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 12px;
-}
-
-.ikon-mavi {
-  background: #dbeafe;
-  color: var(--color-secondary);
-}
-
-.ikon-kirmizi {
-  background: var(--color-danger-bg);
-  color: var(--color-danger-text);
-}
-
-.ikon-turuncu {
-  background: #ffedd5;
-  color: #9a3412;
-}
-
-.ikon-yesil {
-  background: #ccfbf1;
-  color: var(--color-primary);
-}
-
-.istatistik-sayi {
-  font-size: 26px;
-  font-weight: 700;
-  color: var(--color-text);
-  line-height: 1.1;
-}
-
-.istatistik-etiket {
-  font-size: 13px;
-  color: var(--color-text-muted);
-  margin-top: 4px;
-}
-
 .tutar-hucre {
   font-variant-numeric: tabular-nums;
   font-weight: 500;
@@ -588,41 +514,6 @@ tr.neden-satiri li {
 }
 
 .durum-beklemede {
-  background: var(--color-danger-bg);
-  color: var(--color-danger-text);
-}
-
-.kyc-satiri {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.kyc-rozet {
-  font-size: 12px;
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-weight: 500;
-  background: var(--color-surface-hover);
-  color: var(--color-text-secondary);
-}
-
-.pep-checkbox-etiket {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-}
-
-.kyc-orta {
-  background: var(--color-warning-bg);
-  color: var(--color-warning-text);
-}
-
-.kyc-yuksek {
   background: var(--color-danger-bg);
   color: var(--color-danger-text);
 }
@@ -844,11 +735,5 @@ tr.neden-satiri li {
   margin: 8px 0 0;
   font-size: 12px;
   color: var(--color-text-faint);
-}
-
-@media (max-width: 800px) {
-  .istatistik-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
 </style>
