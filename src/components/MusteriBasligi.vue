@@ -83,8 +83,7 @@ function kycEtiketMetni(seviye: string) {
 
 async function kycGuncelle() {
   if (!musteri.value) return;
-  const token = localStorage.getItem("token");
-  if (!token) {
+  if (!localStorage.getItem("rol")) {
     router.push("/login");
     return;
   }
@@ -124,8 +123,7 @@ async function kycGuncelle() {
 
 async function pepGuncelle() {
   if (!musteri.value) return;
-  const token = localStorage.getItem("token");
-  if (!token) {
+  if (!localStorage.getItem("rol")) {
     router.push("/login");
     return;
   }

@@ -21,11 +21,12 @@ describe("Login.vue", () => {
     vi.restoreAllMocks();
   });
 
-  it("basarili giriste token/rol localStorage a kaydedilip ana sayfaya yonlendirmeli", async () => {
+  it("basarili giriste rol/adSoyad localStorage'a kaydedilip ana sayfaya yonlendirmeli", async () => {
+    // Token artik JSON govdesinde donmuyor - httpOnly cookie olarak set
+    // ediliyor (bkz. backend routes/auth.ts), bu yuzden mock cevapta yok.
     globalThis.fetch = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({
-        token: "sahte-token",
         rol: "analist",
         adSoyad: "Test Kullanici",
         id: 1,
@@ -43,7 +44,6 @@ describe("Login.vue", () => {
     await wrapper.find("form").trigger("submit.prevent");
     await flushPromises();
 
-    expect(localStorage.getItem("token")).toBe("sahte-token");
     expect(localStorage.getItem("rol")).toBe("analist");
     expect(router.currentRoute.value.path).toBe("/");
   });
@@ -66,7 +66,7 @@ describe("Login.vue", () => {
     await flushPromises();
 
     expect(wrapper.text()).toContain("Email veya sifre hatali");
-    expect(localStorage.getItem("token")).toBeNull();
+    expect(localStorage.getItem("rol")).toBeNull();
     expect(router.currentRoute.value.path).toBe("/login");
   });
 });

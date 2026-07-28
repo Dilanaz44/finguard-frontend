@@ -93,6 +93,7 @@ async function girisYap() {
     const response = await fetch(`${API_URL}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include", // tarayicinin Set-Cookie'yi kabul etmesi icin sart
       body: JSON.stringify({ email: email.value, sifre: sifre.value }),
     });
 
@@ -103,7 +104,8 @@ async function girisYap() {
       return;
     }
 
-    localStorage.setItem("token", veri.token);
+    // Token artik httpOnly cookie'de (JS erisemiyor, gormiyoruz bile) - burada
+    // sadece arayuzun ihtiyac duydugu, hassas olmayan bilgileri saklıyoruz.
     localStorage.setItem("rol", veri.rol);
     localStorage.setItem("adSoyad", veri.adSoyad);
     localStorage.setItem("analistId", String(veri.id));

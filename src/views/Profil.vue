@@ -86,8 +86,7 @@ async function sifreDegistir() {
     return;
   }
 
-  const token = localStorage.getItem("token");
-  if (!token) {
+  if (!localStorage.getItem("rol")) {
     router.push("/login");
     return;
   }

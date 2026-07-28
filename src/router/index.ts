@@ -26,14 +26,20 @@ const router = createRouter({
   ],
 });
 
-// Girisi gerektirmeyen tek sayfalar bunlar - geri kalan her route icin token
+// Girisi gerektirmeyen tek sayfalar bunlar - geri kalan her route icin giris
 // zorunlu. Onceden her view kendi onMounted'inda ayni kontrolu tekrarliyordu;
 // artik navigasyon tamamlanmadan once merkezi olarak burada yapiliyor.
+//
+// Not: token artik httpOnly bir cookie'de (JS erisemiyor), o yuzden "giris
+// yapilmis mi" kontrolunu token'in kendisiyle degil, login sirasinda ayrica
+// sakladigimiz (hassas olmayan) 'rol' bilgisinin varligiyla yapiyoruz. Gercek
+// yetkilendirme zaten her istekte backend'de (tokenDogrula) kontrol ediliyor -
+// burasi sadece SPA'nin "hangi sayfayi gostereyim" kararini hizlandiriyor.
 const GIRIS_GEREKTIRMEYEN_ROTALAR = ["/login", "/sifremi-unuttum", "/sifre-sifirla"];
 
 router.beforeEach((to) => {
-  const token = localStorage.getItem("token");
-  if (!token && !GIRIS_GEREKTIRMEYEN_ROTALAR.includes(to.path)) {
+  const girisYapilmis = !!localStorage.getItem("rol");
+  if (!girisYapilmis && !GIRIS_GEREKTIRMEYEN_ROTALAR.includes(to.path)) {
     return "/login";
   }
 });

@@ -33,7 +33,7 @@ describe("Dashboard.vue", () => {
   });
 
   it("musteri listesi ve KPI'lar basariyla yuklenince gosterilmeli", async () => {
-    localStorage.setItem("token", "sahte-token");
+    localStorage.setItem("rol", "analist");
 
     globalThis.fetch = vi.fn(async (url) => {
       const yol = String(url);
@@ -79,7 +79,7 @@ describe("Dashboard.vue", () => {
   });
 
   it("veri yuklenemezse hata mesaji gostermeli", async () => {
-    localStorage.setItem("token", "sahte-token");
+    localStorage.setItem("rol", "analist");
 
     globalThis.fetch = vi
       .fn()

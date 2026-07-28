@@ -209,8 +209,7 @@ function kendiIlkOnayiMi(islem: Islem) {
 }
 
 async function islemiGuncelle(islem: Islem, aksiyon: "onayla" | "reddet") {
-  const token = localStorage.getItem("token");
-  if (!token) {
+  if (!localStorage.getItem("rol")) {
     router.push("/login");
     return;
   }

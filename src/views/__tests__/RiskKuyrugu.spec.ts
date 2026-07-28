@@ -34,7 +34,7 @@ function fetchMock(islemler: unknown[], hesaplar: unknown[] = []) {
 describe("RiskKuyrugu.vue", () => {
   beforeEach(() => {
     localStorage.clear();
-    localStorage.setItem("token", "sahte-token");
+    localStorage.setItem("rol", "analist");
     vi.restoreAllMocks();
   });
 

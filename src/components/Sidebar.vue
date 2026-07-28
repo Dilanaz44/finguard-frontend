@@ -176,9 +176,11 @@
 import { ref, computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import Logo from "./Logo.vue";
+import { useApi } from "../composables/useApi";
 
 const route = useRoute();
 const router = useRouter();
+const { apiFetch } = useApi();
 
 const rol = localStorage.getItem("rol");
 const adSoyad = localStorage.getItem("adSoyad") || "";
@@ -207,10 +209,17 @@ function baslangicHarfleri(ad: string) {
     .toUpperCase();
 }
 
-function cikisYap() {
-  localStorage.removeItem("token");
+async function cikisYap() {
+  // Token httpOnly cookie'de oldugu icin JS onu silemez - backend'e istek
+  // atip cookie'yi orada temizletmemiz gerekiyor.
+  try {
+    await apiFetch("/logout", { method: "POST" });
+  } catch {
+    // Sunucuya ulasilamasa bile yerel oturumu temizleyip cikis yapmaya devam et.
+  }
   localStorage.removeItem("rol");
   localStorage.removeItem("adSoyad");
+  localStorage.removeItem("analistId");
   router.push("/login");
 }
 </script>

@@ -478,8 +478,7 @@ function durumEtiketMetni(durum: string) {
 }
 
 async function atamaGuncelle(islem: Islem, secilenDeger: string) {
-  const token = localStorage.getItem("token");
-  if (!token) {
+  if (!localStorage.getItem("rol")) {
     router.push("/login");
     return;
   }
@@ -512,8 +511,7 @@ async function notEkle(islem: Islem) {
   const metin = (yeniNotMetni.value[islem.id] || "").trim();
   if (!metin) return;
 
-  const token = localStorage.getItem("token");
-  if (!token) {
+  if (!localStorage.getItem("rol")) {
     router.push("/login");
     return;
   }
@@ -555,8 +553,7 @@ function formatTarih(tarih: string | null) {
 }
 
 async function notKaydet(islem: Islem) {
-  const token = localStorage.getItem("token");
-  if (!token) {
+  if (!localStorage.getItem("rol")) {
     router.push("/login");
     return;
   }
