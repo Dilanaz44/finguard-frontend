@@ -26,4 +26,16 @@ const router = createRouter({
   ],
 });
 
+// Girisi gerektirmeyen tek sayfalar bunlar - geri kalan her route icin token
+// zorunlu. Onceden her view kendi onMounted'inda ayni kontrolu tekrarliyordu;
+// artik navigasyon tamamlanmadan once merkezi olarak burada yapiliyor.
+const GIRIS_GEREKTIRMEYEN_ROTALAR = ["/login", "/sifremi-unuttum", "/sifre-sifirla"];
+
+router.beforeEach((to) => {
+  const token = localStorage.getItem("token");
+  if (!token && !GIRIS_GEREKTIRMEYEN_ROTALAR.includes(to.path)) {
+    return "/login";
+  }
+});
+
 export default router;

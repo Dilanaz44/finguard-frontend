@@ -22,6 +22,12 @@ jobs:
       - name: Bagimliliklari kur
         run: npm ci
 
+      - name: Lint kontrolu
+        run: npm run lint
+
+      - name: Testleri calistir
+        run: npm run test
+
       - name: Projeyi build et (derlenebiliyor mu kontrol)
         run: npm run build
 

@@ -1,306 +1,31 @@
 <template>
   <div class="uygulama-govde">
-    <aside
-      class="kenar-menu"
-      :class="{ 'kenar-menu-daraltilmis': daraltilmis }"
-    >
-      <div class="kenar-menu-baslik-satiri">
-        <Logo :size="26" :altbaslik="false" :icon-only="daraltilmis" />
-        <button
-          class="kenar-menu-daralt-buton"
-          :aria-label="daraltilmis ? 'Menuyu ac' : 'Menuyu kapat'"
-          @click="daraltilmis = !daraltilmis"
-        >
-          <svg
-            v-if="!daraltilmis"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path d="M15 6l-6 6 6 6" />
-          </svg>
-          <svg
-            v-else
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path d="M9 6l6 6-6 6" />
-          </svg>
-        </button>
-      </div>
-      <div v-if="!daraltilmis" class="kenar-menu-etiket">Menu</div>
-      <nav class="kenar-menu-nav">
-        <router-link
-          to="/"
-          class="kenar-menu-link"
-          :title="daraltilmis ? 'Musteriler' : undefined"
-        >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-            <path d="M9 22V12h6v10" />
-          </svg>
-          <span v-if="!daraltilmis">Musteriler</span>
-        </router-link>
-        <router-link
-          to="/risk-kuyrugu"
-          class="kenar-menu-link"
-          :title="daraltilmis ? 'Risk Kuyrugu' : undefined"
-        >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path d="M12 9v4" />
-            <circle cx="12" cy="16.5" r="0.5" fill="currentColor" />
-            <path
-              d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"
-            />
-          </svg>
-          <span v-if="!daraltilmis">Risk Kuyrugu</span>
-        </router-link>
-        <router-link
-          to="/baglanti-grafi"
-          class="kenar-menu-link"
-          :title="daraltilmis ? 'Baglanti Grafigi' : undefined"
-        >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <circle cx="6" cy="6" r="2.5" />
-            <circle cx="18" cy="6" r="2.5" />
-            <circle cx="12" cy="18" r="2.5" />
-            <path d="M8 7.5L10.5 16M16 7.5L13.5 16M8.5 6h7" />
-          </svg>
-          <span v-if="!daraltilmis">Baglanti Grafigi</span>
-        </router-link>
-        <router-link
-          v-if="rol === 'kidemli_analist'"
-          to="/audit-log"
-          class="kenar-menu-link"
-          :title="daraltilmis ? 'Denetim Izi' : undefined"
-        >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path d="M12 8v4l3 3" />
-            <circle cx="12" cy="12" r="9" />
-          </svg>
-          <span v-if="!daraltilmis">Denetim Izi</span>
-        </router-link>
-        <router-link
-          v-if="rol === 'kidemli_analist'"
-          to="/risk-ayarlari"
-          class="kenar-menu-link"
-          :title="daraltilmis ? 'Risk Ayarlari' : undefined"
-        >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <circle cx="12" cy="12" r="3" />
-            <path
-              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
-            />
-          </svg>
-          <span v-if="!daraltilmis">Risk Ayarlari</span>
-        </router-link>
-      </nav>
-      <div class="kenar-menu-spacer"></div>
-      <router-link
-        to="/profil"
-        class="kenar-menu-kullanici kenar-menu-kullanici-link"
-      >
-        <div class="kenar-menu-avatar">{{ baslangicHarfleri(adSoyad) }}</div>
-        <div v-if="!daraltilmis">
-          <div class="kenar-menu-isim">{{ adSoyad }}</div>
-          <div class="kenar-menu-rol">{{ rolEtiketi }}</div>
-        </div>
-      </router-link>
-      <button
-        class="btn btn-cikis kenar-menu-cikis"
-        :title="daraltilmis ? 'Cikis Yap' : undefined"
-        @click="cikisYap"
-      >
-        <span v-if="!daraltilmis">Cikis Yap</span>
-        <svg
-          v-else
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-          <path d="M16 17l5-5-5-5" />
-          <path d="M21 12H9" />
-        </svg>
-      </button>
-    </aside>
+    <Sidebar />
     <main class="ana-icerik">
       <div class="container">
         <router-link to="/" class="geri-linki"
           >&larr; Musterilere don</router-link
         >
 
-        <div
-          class="sayfa-baslik"
-          style="
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-          "
-        >
-          <div>
-            <h1>{{ musteri?.adSoyad || "Musteri" }}</h1>
-            <p>{{ musteri?.email || "" }}</p>
-            <div v-if="musteri" class="kyc-satiri">
-              <span class="kyc-rozet" :class="'kyc-' + musteri.riskSeviyesi"
-                >KYC: {{ kycEtiketMetni(musteri.riskSeviyesi) }}</span
-              >
-              <select
-                v-model="kycSecimi"
-                :disabled="kycGuncelleniyor"
-                @change="kycGuncelle"
-              >
-                <option value="dusuk">Dusuk</option>
-                <option value="orta">Orta</option>
-                <option value="yuksek">Yuksek</option>
-              </select>
-              <span v-if="kycMesaj" class="kaydet-onay">{{ kycMesaj }}</span>
-            </div>
-            <div v-if="musteri" class="kyc-satiri">
-              <span class="kyc-rozet" :class="{ 'kyc-yuksek': musteri.pepMi }"
-                >PEP: {{ musteri.pepMi ? "Evet" : "Hayir" }}</span
-              >
-              <label class="pep-checkbox-etiket">
-                <input
-                  v-model="pepSecimi"
-                  type="checkbox"
-                  :disabled="pepGuncelleniyor"
-                  @change="pepGuncelle"
-                />
-                Siyasi nufuz sahibi kisi
-              </label>
-              <span v-if="pepMesaj" class="kaydet-onay">{{ pepMesaj }}</span>
-            </div>
-          </div>
-          <button
-            v-if="!yukleniyor && islemler.length > 0"
-            class="btn"
-            @click="csvIndir"
-          >
-            CSV Indir
-          </button>
-        </div>
+        <MusteriBasligi v-model:musteri="musteri" @hata="hata = $event">
+          <template #aksiyon>
+            <button
+              v-if="!yukleniyor && islemler.length > 0"
+              class="btn"
+              @click="csvIndir"
+            >
+              CSV Indir
+            </button>
+          </template>
+        </MusteriBasligi>
 
-        <div v-if="!yukleniyor && islemler.length > 0" class="istatistik-grid">
-          <div class="istatistik-karti">
-            <div class="istatistik-ikon ikon-mavi">
-              <svg
-                viewBox="0 0 24 24"
-                width="20"
-                height="20"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M3 3v18h18" />
-                <path d="M7 14l4-4 3 3 5-6" />
-              </svg>
-            </div>
-            <div class="istatistik-sayi">{{ toplamIslem }}</div>
-            <div class="istatistik-etiket">Toplam Islem</div>
-          </div>
-
-          <div class="istatistik-karti">
-            <div class="istatistik-ikon ikon-kirmizi">
-              <svg
-                viewBox="0 0 24 24"
-                width="20"
-                height="20"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M12 9v4" />
-                <circle cx="12" cy="16.5" r="0.5" fill="currentColor" />
-                <path
-                  d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"
-                />
-              </svg>
-            </div>
-            <div class="istatistik-sayi">{{ riskliSayisi }}</div>
-            <div class="istatistik-etiket">Riskli Islem (bu sayfa)</div>
-          </div>
-
-          <div class="istatistik-karti">
-            <div class="istatistik-ikon ikon-turuncu">
-              <svg
-                viewBox="0 0 24 24"
-                width="20"
-                height="20"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0z" />
-                <path d="M12 7v5l3 3" />
-              </svg>
-            </div>
-            <div class="istatistik-sayi">%{{ riskOrani }}</div>
-            <div class="istatistik-etiket">Risk Orani (bu sayfa)</div>
-          </div>
-
-          <div class="istatistik-karti">
-            <div class="istatistik-ikon ikon-yesil">
-              <svg
-                viewBox="0 0 24 24"
-                width="20"
-                height="20"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M12 2 L20 6 L20 12 Q20 18 12 22 Q4 18 4 12 L4 6 Z" />
-              </svg>
-            </div>
-            <div class="istatistik-sayi">{{ ortalamaRisk }}</div>
-            <div class="istatistik-etiket">Ortalama Risk Skoru (bu sayfa)</div>
-          </div>
-        </div>
+        <IslemIstatistikleri
+          :goster="!yukleniyor && islemler.length > 0"
+          :toplam-islem="toplamIslem"
+          :riskli-sayisi="riskliSayisi"
+          :risk-orani="riskOrani"
+          :ortalama-risk="ortalamaRisk"
+        />
 
         <div class="card">
           <h2>Islemler</h2>
@@ -587,21 +312,18 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import Logo from "../components/Logo.vue";
-import { API_URL } from "../api";
+import Sidebar from "../components/Sidebar.vue";
+import MusteriBasligi from "../components/MusteriBasligi.vue";
+import IslemIstatistikleri from "../components/IslemIstatistikleri.vue";
+import { useApi } from "../composables/useApi";
 import type { Islem, Musteri, Hesap, Analist } from "../types";
 
+const { apiFetch } = useApi();
 const islemler = ref<Islem[]>([]);
 const sayfa = ref(1);
 const toplamSayfa = ref(1);
 const toplamKayit = ref(0);
 const musteri = ref<Musteri | null>(null);
-const kycSecimi = ref("dusuk");
-const kycGuncelleniyor = ref(false);
-const kycMesaj = ref("");
-const pepSecimi = ref(false);
-const pepGuncelleniyor = ref(false);
-const pepMesaj = ref("");
 const analistler = ref<Analist[]>([]);
 const yeniNotMetni = ref<Record<number, string>>({});
 const notEkleniyor = ref<Record<number, boolean>>({});
@@ -620,28 +342,6 @@ const siralama = ref("tarih-yeni");
 const kaydetMesaji = ref<Record<number, string>>({});
 const route = useRoute();
 const router = useRouter();
-const rol = localStorage.getItem("rol");
-const adSoyad = localStorage.getItem("adSoyad") || "";
-const rolEtiketi = computed(() =>
-  rol === "kidemli_analist" ? "Kidemli Analist" : "Analist",
-);
-const daraltilmis = ref(
-  localStorage.getItem("kenarMenuDaraltilmis") === "true",
-);
-watch(daraltilmis, (deger) => {
-  localStorage.setItem("kenarMenuDaraltilmis", String(deger));
-});
-
-function baslangicHarfleri(ad: string) {
-  if (!ad) return "?";
-  return ad
-    .split(" ")
-    .map((p) => p[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-}
-
 const kuyrukSekmeleri = computed(() => {
   const sayilar = { yeni: 0, inceleniyor: 0, kapatildi: 0 };
   islemler.value.forEach((islem) => {
@@ -777,97 +477,6 @@ function durumEtiketMetni(durum: string) {
   return "Yeni";
 }
 
-function kycEtiketMetni(seviye: string) {
-  if (seviye === "orta") return "Orta";
-  if (seviye === "yuksek") return "Yuksek";
-  return "Dusuk";
-}
-
-async function kycGuncelle() {
-  if (!musteri.value) return;
-  const token = localStorage.getItem("token");
-  if (!token) {
-    router.push("/login");
-    return;
-  }
-
-  kycGuncelleniyor.value = true;
-
-  try {
-    const response = await fetch(
-      `${API_URL}/musteriler/${musteri.value.id}/risk-seviyesi`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ riskSeviyesi: kycSecimi.value }),
-      },
-    );
-
-    if (!response.ok) {
-      hata.value = "KYC risk seviyesi guncellenemedi";
-      return;
-    }
-
-    const guncellenenMusteri = await response.json();
-    musteri.value = {
-      ...musteri.value,
-      riskSeviyesi: guncellenenMusteri.riskSeviyesi,
-    };
-    kycMesaj.value = "Kaydedildi ✓";
-    setTimeout(() => {
-      kycMesaj.value = "";
-    }, 3000);
-  } catch {
-    hata.value = "Sunucuya baglanilamadi";
-  } finally {
-    kycGuncelleniyor.value = false;
-  }
-}
-
-async function pepGuncelle() {
-  if (!musteri.value) return;
-  const token = localStorage.getItem("token");
-  if (!token) {
-    router.push("/login");
-    return;
-  }
-
-  pepGuncelleniyor.value = true;
-
-  try {
-    const response = await fetch(
-      `${API_URL}/musteriler/${musteri.value.id}/pep`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ pepMi: pepSecimi.value }),
-      },
-    );
-
-    if (!response.ok) {
-      hata.value = "PEP durumu guncellenemedi";
-      return;
-    }
-
-    const guncellenenMusteri = await response.json();
-    musteri.value = { ...musteri.value, pepMi: guncellenenMusteri.pepMi };
-    pepMesaj.value = "Kaydedildi ✓";
-    setTimeout(() => {
-      pepMesaj.value = "";
-    }, 3000);
-  } catch {
-    hata.value = "Sunucuya baglanilamadi";
-  } finally {
-    pepGuncelleniyor.value = false;
-  }
-}
-
 async function atamaGuncelle(islem: Islem, secilenDeger: string) {
   const token = localStorage.getItem("token");
   if (!token) {
@@ -878,12 +487,9 @@ async function atamaGuncelle(islem: Islem, secilenDeger: string) {
   const analistId = secilenDeger === "" ? null : Number(secilenDeger);
 
   try {
-    const response = await fetch(`${API_URL}/islemler/${islem.id}/ata`, {
+    const response = await apiFetch(`/islemler/${islem.id}/ata`, {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ analistId }),
     });
 
@@ -915,12 +521,9 @@ async function notEkle(islem: Islem) {
   notEkleniyor.value[islem.id] = true;
 
   try {
-    const response = await fetch(`${API_URL}/islemler/${islem.id}/notlar`, {
+    const response = await apiFetch(`/islemler/${islem.id}/notlar`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ not: metin }),
     });
 
@@ -961,12 +564,9 @@ async function notKaydet(islem: Islem) {
   kaydediliyor.value = true;
 
   try {
-    const response = await fetch(`${API_URL}/islemler/${islem.id}`, {
+    const response = await apiFetch(`/islemler/${islem.id}`, {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         incelemeDurumu: duzenlemeDurum.value,
         analistNotu: duzenlemeNot.value,
@@ -1053,23 +653,9 @@ function aliciGoster(islem: Islem) {
   return `${ad} (${numara})`;
 }
 
-function cikisYap() {
-  localStorage.removeItem("token");
-  localStorage.removeItem("rol");
-  localStorage.removeItem("adSoyad");
-  router.push("/login");
-}
-
 async function sarTaslagiIndir(islem: Islem) {
-  const token = localStorage.getItem("token");
-
   try {
-    const response = await fetch(
-      `${API_URL}/islemler/${islem.id}/sar-taslagi`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      },
-    );
+    const response = await apiFetch(`/islemler/${islem.id}/sar-taslagi`);
 
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
@@ -1083,15 +669,11 @@ async function sarTaslagiIndir(islem: Islem) {
   }
 }
 async function csvIndir() {
-  const token = localStorage.getItem("token");
   const musteriId = route.params.id;
 
   try {
-    const response = await fetch(
-      `${API_URL}/islemler/export?musteriId=${musteriId}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      },
+    const response = await apiFetch(
+      `/islemler/export?musteriId=${musteriId}`,
     );
 
     const blob = await response.blob();
@@ -1110,31 +692,17 @@ async function verileriYukle() {
   yukleniyor.value = true;
   hata.value = "";
 
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    router.push("/login");
-    return;
-  }
-
   const musteriId = route.params.id;
 
   try {
     const [musterilerRes, islemlerRes, hesaplarRes, analistlerRes] =
       await Promise.all([
-        fetch(`${API_URL}/musteriler`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch(
-          `${API_URL}/islemler?musteriId=${musteriId}&sayfa=${sayfa.value}&limit=20`,
-          { headers: { Authorization: `Bearer ${token}` } },
+        apiFetch("/musteriler"),
+        apiFetch(
+          `/islemler?musteriId=${musteriId}&sayfa=${sayfa.value}&limit=20`,
         ),
-        fetch(`${API_URL}/hesaplar`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch(`${API_URL}/analistler`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
+        apiFetch("/hesaplar"),
+        apiFetch("/analistler"),
       ]);
 
     if (
@@ -1152,8 +720,6 @@ async function verileriYukle() {
     musteri.value = musteriler.find(
       (m: Musteri) => String(m.id) === String(musteriId),
     );
-    kycSecimi.value = musteri.value?.riskSeviyesi || "dusuk";
-    pepSecimi.value = musteri.value?.pepMi || false;
 
     const islemlerYaniti = await islemlerRes.json();
     islemler.value = islemlerYaniti.veri;
