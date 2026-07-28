@@ -248,12 +248,12 @@ onMounted(async () => {
 
 .sayfa-baslik h1 {
   font-size: 24px;
-  color: #0f172a;
+  color: var(--color-text);
   margin: 0 0 4px;
 }
 
 .sayfa-baslik p {
-  color: #64748b;
+  color: var(--color-text-muted);
   margin: 0;
   font-size: 14px;
 }
@@ -262,15 +262,15 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #64748b;
+  color: var(--color-text-muted);
   font-size: 14px;
 }
 
 .spinner {
   width: 14px;
   height: 14px;
-  border: 2px solid #cbd5e1;
-  border-top-color: #0d9488;
+  border: 2px solid var(--color-border-input);
+  border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spinner-donme 0.7s linear infinite;
 }
@@ -297,11 +297,11 @@ onMounted(async () => {
 .ayar-satiri label {
   font-size: 13px;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--color-text);
 }
 
 .ayar-satiri input {
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--color-border-input);
   border-radius: 8px;
   padding: 8px 12px;
   font-size: 14px;
@@ -309,7 +309,7 @@ onMounted(async () => {
 
 .ayar-aciklama {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--color-text-faint);
 }
 
 .btn-kaydet {
@@ -318,7 +318,7 @@ onMounted(async () => {
 }
 
 .kaydet-onay {
-  color: #0d9488;
+  color: var(--color-primary);
   font-size: 13px;
   font-weight: 500;
 }

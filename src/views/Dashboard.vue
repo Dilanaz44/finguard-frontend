@@ -133,7 +133,7 @@
               width="18"
               height="18"
               fill="none"
-              stroke="#94a3b8"
+              stroke="var(--color-text-faint)"
               stroke-width="2"
             >
               <path
@@ -303,12 +303,12 @@ onMounted(async () => {
 
 .sayfa-baslik h1 {
   font-size: 24px;
-  color: #0f172a;
+  color: var(--color-text);
   margin: 0 0 4px;
 }
 
 .sayfa-baslik p {
-  color: #64748b;
+  color: var(--color-text-muted);
   margin: 0;
   font-size: 14px;
 }
@@ -324,7 +324,7 @@ onMounted(async () => {
   align-items: center;
   gap: 16px;
   background: white;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 16px 20px;
   text-decoration: none;
@@ -337,26 +337,26 @@ onMounted(async () => {
 }
 
 .kullanici-karti:hover {
-  border-color: #0d9488;
+  border-color: var(--color-primary);
   box-shadow: 0 4px 14px rgba(13, 148, 136, 0.12);
   transform: translateY(-1px);
 }
 
 .kullanici-karti-uyari {
-  border-left: 4px solid #dc2626;
+  border-left: 4px solid var(--color-danger);
 }
 
 .mini-sayi.mini-bekleyen {
-  color: #dc2626;
+  color: var(--color-danger);
 }
 
 .bekleyen-banner {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #991b1b;
+  background: var(--color-danger-bg-subtle);
+  border: 1px solid var(--color-danger-badge-bg);
+  color: var(--color-danger-text);
   border-radius: 10px;
   padding: 12px 16px;
   margin-bottom: 16px;
@@ -371,15 +371,15 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #64748b;
+  color: var(--color-text-muted);
   font-size: 14px;
 }
 
 .spinner {
   width: 14px;
   height: 14px;
-  border: 2px solid #cbd5e1;
-  border-top-color: #0d9488;
+  border: 2px solid var(--color-border-input);
+  border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spinner-donme 0.7s linear infinite;
 }
@@ -394,7 +394,11 @@ onMounted(async () => {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #0d9488, #1e40af);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
   color: white;
   display: flex;
   align-items: center;
@@ -411,7 +415,7 @@ onMounted(async () => {
 
 .kullanici-adi {
   font-weight: 600;
-  color: #0f172a;
+  color: var(--color-text);
 }
 
 .kyc-rozet-mini {
@@ -424,18 +428,18 @@ onMounted(async () => {
 }
 
 .kyc-rozet-mini-orta {
-  background: #fef3c7;
-  color: #92400e;
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
 }
 
 .kyc-rozet-mini-yuksek {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--color-danger-bg);
+  color: var(--color-danger-text);
 }
 
 .kullanici-email {
   font-size: 13px;
-  color: #94a3b8;
+  color: var(--color-text-faint);
 }
 
 .kullanici-istatistik {
@@ -453,16 +457,16 @@ onMounted(async () => {
 .mini-sayi {
   font-weight: 700;
   font-size: 16px;
-  color: #0f172a;
+  color: var(--color-text);
 }
 
 .mini-sayi.mini-riskli {
-  color: #dc2626;
+  color: var(--color-danger);
 }
 
 .mini-etiket {
   font-size: 11px;
-  color: #94a3b8;
+  color: var(--color-text-faint);
 }
 
 .ok-ikon {
@@ -478,7 +482,7 @@ onMounted(async () => {
 
 .kpi-karti {
   background: white;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 16px 18px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
@@ -488,29 +492,29 @@ onMounted(async () => {
 }
 
 .kpi-karti.kpi-uyari {
-  border-color: #fecaca;
-  background: #fef2f2;
+  border-color: var(--color-danger-badge-bg);
+  background: var(--color-danger-bg-subtle);
 }
 
 .kpi-sayi {
   font-size: 24px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-text);
 }
 
 .kpi-uyari .kpi-sayi {
-  color: #dc2626;
+  color: var(--color-danger);
 }
 
 .kpi-etiket {
   font-size: 12px;
-  color: #64748b;
+  color: var(--color-text-muted);
   margin-top: 2px;
 }
 
 .global-arama-kutusu {
   width: 100%;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--color-border-input);
   border-radius: 8px;
   padding: 10px 14px;
   font-size: 14px;

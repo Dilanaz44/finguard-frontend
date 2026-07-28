@@ -132,19 +132,19 @@ async function sifreDegistir() {
 
 .sayfa-baslik h1 {
   font-size: 24px;
-  color: #0f172a;
+  color: var(--color-text);
   margin: 0 0 4px;
 }
 
 .sayfa-baslik p {
-  color: #64748b;
+  color: var(--color-text-muted);
   margin: 0;
   font-size: 14px;
 }
 
 .card h2 {
   font-size: 16px;
-  color: #0f172a;
+  color: var(--color-text);
   margin: 0 0 16px;
 }
 
@@ -164,11 +164,11 @@ async function sifreDegistir() {
 .ayar-satiri label {
   font-size: 13px;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--color-text);
 }
 
 .ayar-satiri input {
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--color-border-input);
   border-radius: 8px;
   padding: 8px 12px;
   font-size: 14px;
@@ -176,7 +176,7 @@ async function sifreDegistir() {
 
 .ayar-aciklama {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--color-text-faint);
 }
 
 .btn-kaydet {
@@ -185,7 +185,7 @@ async function sifreDegistir() {
 }
 
 .kaydet-onay {
-  color: #0d9488;
+  color: var(--color-primary);
   font-size: 13px;
   font-weight: 500;
 }

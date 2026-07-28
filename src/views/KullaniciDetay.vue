@@ -409,7 +409,7 @@ const ortalamaRisk = computed(() => {
   display: inline-block;
   margin-bottom: 16px;
   font-size: 14px;
-  color: #0d9488;
+  color: var(--color-primary);
   text-decoration: none;
 }
 
@@ -423,12 +423,12 @@ const ortalamaRisk = computed(() => {
 
 .sayfa-baslik h1 {
   font-size: 24px;
-  color: #0f172a;
+  color: var(--color-text);
   margin: 0 0 4px;
 }
 
 .sayfa-baslik p {
-  color: #64748b;
+  color: var(--color-text-muted);
   margin: 0;
   font-size: 14px;
 }
@@ -442,7 +442,7 @@ const ortalamaRisk = computed(() => {
 
 .istatistik-karti {
   background: white;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 18px 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
@@ -460,12 +460,12 @@ const ortalamaRisk = computed(() => {
 
 .ikon-mavi {
   background: #dbeafe;
-  color: #1e40af;
+  color: var(--color-secondary);
 }
 
 .ikon-kirmizi {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--color-danger-bg);
+  color: var(--color-danger-text);
 }
 
 .ikon-turuncu {
@@ -475,19 +475,19 @@ const ortalamaRisk = computed(() => {
 
 .ikon-yesil {
   background: #ccfbf1;
-  color: #0d9488;
+  color: var(--color-primary);
 }
 
 .istatistik-sayi {
   font-size: 26px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-text);
   line-height: 1.1;
 }
 
 .istatistik-etiket {
   font-size: 13px;
-  color: #64748b;
+  color: var(--color-text-muted);
   margin-top: 4px;
 }
 
@@ -500,7 +500,7 @@ const ortalamaRisk = computed(() => {
   font-family: "SF Mono", "Menlo", monospace;
   font-size: 12px;
   letter-spacing: 0.3px;
-  color: #475569;
+  color: var(--color-text-secondary);
 }
 
 .hedef-etiket {
@@ -511,20 +511,20 @@ const ortalamaRisk = computed(() => {
 }
 
 .hedef-ici {
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--color-surface-hover);
+  color: var(--color-text-secondary);
 }
 
 .hedef-disi {
-  background: #e0f2fe;
-  color: #075985;
+  background: var(--color-info-bg);
+  color: var(--color-info-text);
 }
 
 .risk-cubugu {
   display: inline-block;
   width: 60px;
   height: 6px;
-  background: #e2e8f0;
+  background: var(--color-border);
   border-radius: 999px;
   overflow: hidden;
   vertical-align: middle;
@@ -533,23 +533,23 @@ const ortalamaRisk = computed(() => {
 
 .risk-dolgu {
   height: 100%;
-  background: #0d9488;
+  background: var(--color-primary);
   border-radius: 999px;
   transition: width 0.3s ease;
 }
 
 .risk-dolgu.risk-yuksek {
-  background: #dc2626;
+  background: var(--color-danger);
 }
 
 .risk-sayi {
   font-size: 13px;
-  color: #475569;
+  color: var(--color-text-secondary);
   vertical-align: middle;
 }
 
 .risk-bilgi-ikon {
-  color: #94a3b8;
+  color: var(--color-text-faint);
   font-size: 12px;
 }
 
@@ -558,10 +558,10 @@ tr.tiklanabilir {
 }
 
 tr.neden-satiri td {
-  background: #f8fafc;
+  background: var(--color-surface-subtle);
   padding: 12px 14px 14px 14px;
   font-size: 13px;
-  color: #334155;
+  color: var(--color-text-strong);
 }
 
 tr.neden-satiri ul {
@@ -578,18 +578,18 @@ tr.neden-satiri li {
   padding: 3px 10px;
   border-radius: 999px;
   font-weight: 500;
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--color-surface-hover);
+  color: var(--color-text-secondary);
 }
 
 .durum-inceleniyor {
-  background: #fef3c7;
-  color: #92400e;
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
 }
 
 .durum-beklemede {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--color-danger-bg);
+  color: var(--color-danger-text);
 }
 
 .kyc-satiri {
@@ -604,8 +604,8 @@ tr.neden-satiri li {
   padding: 3px 10px;
   border-radius: 999px;
   font-weight: 500;
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--color-surface-hover);
+  color: var(--color-text-secondary);
 }
 
 .pep-checkbox-etiket {
@@ -613,24 +613,24 @@ tr.neden-satiri li {
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  color: #475569;
+  color: var(--color-text-secondary);
   cursor: pointer;
 }
 
 .kyc-orta {
-  background: #fef3c7;
-  color: #92400e;
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
 }
 
 .kyc-yuksek {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--color-danger-bg);
+  color: var(--color-danger-text);
 }
 
 .kuyruk-sekmeler {
   display: flex;
   gap: 4px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--color-border);
   margin-bottom: 16px;
 }
 
@@ -641,17 +641,17 @@ tr.neden-satiri li {
   padding: 8px 14px;
   font-size: 13px;
   font-weight: 500;
-  color: #64748b;
+  color: var(--color-text-muted);
   cursor: pointer;
 }
 
 .kuyruk-sekme:hover {
-  color: #0f172a;
+  color: var(--color-text);
 }
 
 .kuyruk-sekme-aktif {
-  color: #0d9488;
-  border-bottom-color: #0d9488;
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
 }
 
 .filtre-cubugu {
@@ -671,20 +671,20 @@ tr.neden-satiri li {
 
 .sayfalama-bilgi {
   font-size: 13px;
-  color: #64748b;
+  color: var(--color-text-muted);
 }
 
 .arama-kutusu {
   flex: 1;
   min-width: 200px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--color-border-input);
   border-radius: 6px;
   padding: 8px 10px;
   font-size: 13px;
 }
 
 .filtre-cubugu select {
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--color-border-input);
   border-radius: 6px;
   padding: 8px 10px;
   font-size: 13px;
@@ -692,20 +692,20 @@ tr.neden-satiri li {
 }
 
 .filtre-sonuc-yok {
-  color: #64748b;
+  color: var(--color-text-muted);
   font-size: 14px;
   padding: 12px 0;
 }
 
 .kisayol-ipucu {
-  color: #94a3b8;
+  color: var(--color-text-faint);
   font-size: 12px;
   margin: 0 0 12px;
 }
 
 .kisayol-ipucu kbd {
-  background: #f1f5f9;
-  border: 1px solid #cbd5e1;
+  background: var(--color-surface-hover);
+  border: 1px solid var(--color-border-input);
   border-radius: 4px;
   padding: 1px 6px;
   font-family: "SF Mono", "Menlo", monospace;
@@ -713,14 +713,14 @@ tr.neden-satiri li {
 }
 
 .durum-kapatildi {
-  background: #dcfce7;
-  color: #166534;
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
 }
 
 .inceleme-formu {
   margin-top: 14px;
   padding-top: 14px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--color-border);
 }
 
 .inceleme-satiri {
@@ -731,7 +731,7 @@ tr.neden-satiri li {
 }
 
 .inceleme-satiri select {
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--color-border-input);
   border-radius: 6px;
   padding: 6px 8px;
 }
@@ -739,7 +739,7 @@ tr.neden-satiri li {
 .not-timeline {
   margin-top: 16px;
   padding-top: 14px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--color-border);
 }
 
 .not-timeline ul {
@@ -753,31 +753,31 @@ tr.neden-satiri li {
 
 .not-timeline li {
   background: white;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 8px 10px;
 }
 
 .not-meta {
   font-size: 11px;
-  color: #94a3b8;
+  color: var(--color-text-faint);
 }
 
 .not-timeline li p {
   margin: 4px 0 0;
   font-size: 13px;
-  color: #334155;
+  color: var(--color-text-strong);
 }
 
 .not-yok {
   font-size: 13px;
-  color: #94a3b8;
+  color: var(--color-text-faint);
   margin: 8px 0;
 }
 
 .not-timeline textarea {
   width: 100%;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--color-border-input);
   border-radius: 6px;
   padding: 8px;
   font-family: inherit;
@@ -788,7 +788,7 @@ tr.neden-satiri li {
 
 .inceleme-formu textarea {
   width: 100%;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--color-border-input);
   border-radius: 6px;
   padding: 8px;
   font-family: inherit;
@@ -798,11 +798,11 @@ tr.neden-satiri li {
 
 .btn-kaydet {
   margin-top: 8px;
-  background: #0d9488;
+  background: var(--color-primary);
 }
 
 .btn-kaydet:hover {
-  background: #0f766e;
+  background: var(--color-primary-hover);
 }
 
 .btn-kaydet:disabled {
@@ -812,7 +812,7 @@ tr.neden-satiri li {
 
 .kaydet-onay {
   margin-left: 10px;
-  color: #166534;
+  color: var(--color-success-text);
   font-size: 13px;
   font-weight: 600;
 }
@@ -821,15 +821,15 @@ tr.neden-satiri li {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #64748b;
+  color: var(--color-text-muted);
   font-size: 14px;
 }
 
 .spinner {
   width: 14px;
   height: 14px;
-  border: 2px solid #cbd5e1;
-  border-top-color: #0d9488;
+  border: 2px solid var(--color-border-input);
+  border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spinner-donme 0.7s linear infinite;
 }
@@ -843,7 +843,7 @@ tr.neden-satiri li {
 .inceleme-bilgi {
   margin: 8px 0 0;
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--color-text-faint);
 }
 
 @media (max-width: 800px) {

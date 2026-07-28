@@ -37,7 +37,7 @@
               width="18"
               height="18"
               fill="none"
-              stroke="#64748b"
+              stroke="var(--color-text-muted)"
               stroke-width="2"
             >
               <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
@@ -49,7 +49,7 @@
               width="18"
               height="18"
               fill="none"
-              stroke="#64748b"
+              stroke="var(--color-text-muted)"
               stroke-width="2"
             >
               <path
@@ -73,7 +73,7 @@
           width="14"
           height="14"
           fill="none"
-          stroke="#0d9488"
+          stroke="var(--color-primary)"
           stroke-width="2"
         >
           <path d="M12 2 L20 6 L20 12 Q20 18 12 22 Q4 18 4 12 L4 6 Z" />
@@ -135,7 +135,7 @@ async function girisYap() {
   min-height: 100vh;
   position: relative;
   overflow: hidden;
-  background: #f7f9fb;
+  background: var(--color-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -180,15 +180,15 @@ async function girisYap() {
 .giris-karti h2 {
   font-size: 19px;
   margin-bottom: 22px;
-  color: #0f172a;
+  color: var(--color-text);
   font-weight: 700;
 }
 
 .input-grubu {
   display: flex;
   align-items: center;
-  background: #f8fafc;
-  border: 1.5px solid #e2e8f0;
+  background: var(--color-surface-subtle);
+  border: 1.5px solid var(--color-border);
   border-radius: 9px;
   padding: 11px 14px;
   margin-bottom: 14px;
@@ -198,7 +198,7 @@ async function girisYap() {
 }
 
 .input-grubu:focus-within {
-  border-color: #0d9488;
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
   background: white;
 }
@@ -209,7 +209,7 @@ async function girisYap() {
   background: transparent;
   flex: 1;
   font-size: 14px;
-  color: #0f172a;
+  color: var(--color-text);
 }
 
 .goz-ikon {
@@ -226,7 +226,11 @@ async function girisYap() {
 .giris-butonu {
   width: 100%;
   padding: 13px;
-  background: linear-gradient(135deg, #0d9488, #1e40af);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
   color: white;
   border: none;
   border-radius: 9px;
@@ -254,12 +258,12 @@ async function girisYap() {
   margin-top: 16px;
   font-size: 14px;
   text-align: center;
-  color: #475569;
+  color: var(--color-text-secondary);
   text-decoration: none;
 }
 
 .unuttum-linki:hover {
-  color: #0d9488;
+  color: var(--color-primary);
 }
 
 .guven-rozeti {
@@ -269,9 +273,9 @@ async function girisYap() {
   gap: 6px;
   margin-top: 24px;
   padding-top: 18px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--color-surface-hover);
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--color-text-faint);
 }
 
 .sr-only {

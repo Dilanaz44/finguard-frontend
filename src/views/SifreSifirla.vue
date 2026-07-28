@@ -12,7 +12,12 @@
           />
         </div>
         <button type="submit" class="giris-butonu">SIFREYI GUNCELLE</button>
-        <p v-if="mesaj" style="margin-top: 12px; color: #166534">{{ mesaj }}</p>
+        <p
+          v-if="mesaj"
+          style="margin-top: 12px; color: var(--color-success-text)"
+        >
+          {{ mesaj }}
+        </p>
         <p v-if="hata" class="hata-mesaj" style="margin-top: 12px">
           {{ hata }}
         </p>
@@ -73,7 +78,7 @@ async function sifirla() {
 <style scoped>
 .login-sayfa {
   min-height: 100vh;
-  background: #f1f5f9;
+  background: var(--color-surface-hover);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -90,13 +95,13 @@ async function sifirla() {
 .giris-karti h2 {
   font-size: 18px;
   margin-bottom: 16px;
-  color: #1e293b;
+  color: var(--color-text-heading);
 }
 
 .input-grubu {
   display: flex;
   align-items: center;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--color-border-input);
   border-radius: 8px;
   padding: 10px 14px;
   margin-bottom: 16px;
@@ -112,7 +117,11 @@ async function sifirla() {
 .giris-butonu {
   width: 100%;
   padding: 12px;
-  background: linear-gradient(135deg, #1e293b, #0f172a);
+  background: linear-gradient(
+    135deg,
+    var(--color-text-heading),
+    var(--color-text)
+  );
   color: white;
   border: none;
   border-radius: 8px;
@@ -121,6 +130,6 @@ async function sifirla() {
 }
 
 .hata-mesaj {
-  color: #b91c1c;
+  color: var(--color-danger-text-strong);
 }
 </style>

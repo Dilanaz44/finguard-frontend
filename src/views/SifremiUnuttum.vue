@@ -2,7 +2,7 @@
   <div class="login-sayfa">
     <div class="giris-karti">
       <h2>Sifremi Unuttum</h2>
-      <p style="color: #64748b; font-size: 14px">
+      <p style="color: var(--color-text-muted); font-size: 14px">
         Email adresini gir, sifirlama linki gonderelim.
       </p>
       <form @submit.prevent="gonder">
@@ -10,7 +10,12 @@
           <input v-model="email" type="email" placeholder="Email" required />
         </div>
         <button type="submit" class="giris-butonu">LINK GONDER</button>
-        <p v-if="mesaj" style="margin-top: 12px; color: #166534">{{ mesaj }}</p>
+        <p
+          v-if="mesaj"
+          style="margin-top: 12px; color: var(--color-success-text)"
+        >
+          {{ mesaj }}
+        </p>
       </form>
       <router-link
         to="/login"
@@ -47,7 +52,7 @@ async function gonder() {
 <style scoped>
 .login-sayfa {
   min-height: 100vh;
-  background: #f1f5f9;
+  background: var(--color-surface-hover);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -64,13 +69,13 @@ async function gonder() {
 .giris-karti h2 {
   font-size: 18px;
   margin-bottom: 8px;
-  color: #1e293b;
+  color: var(--color-text-heading);
 }
 
 .input-grubu {
   display: flex;
   align-items: center;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--color-border-input);
   border-radius: 8px;
   padding: 10px 14px;
   margin: 16px 0;
@@ -86,7 +91,11 @@ async function gonder() {
 .giris-butonu {
   width: 100%;
   padding: 12px;
-  background: linear-gradient(135deg, #1e293b, #0f172a);
+  background: linear-gradient(
+    135deg,
+    var(--color-text-heading),
+    var(--color-text)
+  );
   color: white;
   border: none;
   border-radius: 8px;

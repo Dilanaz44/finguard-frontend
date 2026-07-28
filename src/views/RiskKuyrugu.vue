@@ -257,12 +257,12 @@ onMounted(async () => {
 
 .sayfa-baslik h1 {
   font-size: 24px;
-  color: #0f172a;
+  color: var(--color-text);
   margin: 0 0 4px;
 }
 
 .sayfa-baslik p {
-  color: #64748b;
+  color: var(--color-text-muted);
   margin: 0;
   font-size: 14px;
 }
@@ -271,15 +271,15 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #64748b;
+  color: var(--color-text-muted);
   font-size: 14px;
 }
 
 .spinner {
   width: 14px;
   height: 14px;
-  border: 2px solid #cbd5e1;
-  border-top-color: #0d9488;
+  border: 2px solid var(--color-border-input);
+  border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spinner-donme 0.7s linear infinite;
 }
@@ -294,7 +294,7 @@ onMounted(async () => {
   font-family: "SF Mono", "Menlo", monospace;
   font-size: 12px;
   letter-spacing: 0.3px;
-  color: #475569;
+  color: var(--color-text-secondary);
 }
 
 .tutar-hucre {
@@ -310,20 +310,20 @@ onMounted(async () => {
 }
 
 .hedef-ici {
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--color-surface-hover);
+  color: var(--color-text-secondary);
 }
 
 .hedef-disi {
-  background: #e0f2fe;
-  color: #075985;
+  background: var(--color-info-bg);
+  color: var(--color-info-text);
 }
 
 .risk-cubugu {
   display: inline-block;
   width: 60px;
   height: 6px;
-  background: #e2e8f0;
+  background: var(--color-border);
   border-radius: 999px;
   overflow: hidden;
   vertical-align: middle;
@@ -332,21 +332,21 @@ onMounted(async () => {
 
 .risk-dolgu {
   height: 100%;
-  background: #dc2626;
+  background: var(--color-danger);
   border-radius: 999px;
 }
 
 .risk-sayi {
   font-size: 13px;
-  color: #475569;
+  color: var(--color-text-secondary);
   vertical-align: middle;
 }
 
 tr.neden-satiri td {
-  background: #f8fafc;
+  background: var(--color-surface-subtle);
   padding: 12px 14px 14px 14px;
   font-size: 13px;
-  color: #334155;
+  color: var(--color-text-strong);
 }
 
 tr.neden-satiri ul {
@@ -364,23 +364,23 @@ tr.neden-satiri li {
 }
 
 .btn-onayla {
-  background: #0d9488;
+  background: var(--color-primary);
   color: white;
   border: none;
 }
 
 .btn-onayla:hover {
-  background: #0f766e;
+  background: var(--color-primary-hover);
 }
 
 .btn-reddet {
   background: white;
-  color: #dc2626;
-  border: 1px solid #fecaca;
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger-badge-bg);
 }
 
 .btn-reddet:hover {
-  background: #fef2f2;
+  background: var(--color-danger-bg-subtle);
 }
 
 .btn:disabled {
@@ -390,7 +390,7 @@ tr.neden-satiri li {
 
 .onay-bekliyor-notu {
   font-size: 12px;
-  color: #92400e;
+  color: var(--color-warning-text);
   font-style: italic;
 }
 
@@ -399,13 +399,13 @@ tr.neden-satiri li {
   padding: 3px 10px;
   border-radius: 999px;
   font-weight: 500;
-  background: #fef3c7;
-  color: #92400e;
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
   white-space: nowrap;
 }
 
 .ilk-onay-rozeti.ilk-onay-yok {
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--color-surface-hover);
+  color: var(--color-text-secondary);
 }
 </style>

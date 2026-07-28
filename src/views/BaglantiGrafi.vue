@@ -266,12 +266,12 @@ onMounted(async () => {
 
 .sayfa-baslik h1 {
   font-size: 24px;
-  color: #0f172a;
+  color: var(--color-text);
   margin: 0 0 4px;
 }
 
 .sayfa-baslik p {
-  color: #64748b;
+  color: var(--color-text-muted);
   margin: 0;
   font-size: 14px;
 }
@@ -280,15 +280,15 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #64748b;
+  color: var(--color-text-muted);
   font-size: 14px;
 }
 
 .spinner {
   width: 14px;
   height: 14px;
-  border: 2px solid #cbd5e1;
-  border-top-color: #0d9488;
+  border: 2px solid var(--color-border-input);
+  border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spinner-donme 0.7s linear infinite;
 }
@@ -303,9 +303,9 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #991b1b;
+  background: var(--color-danger-bg-subtle);
+  border: 1px solid var(--color-danger-badge-bg);
+  color: var(--color-danger-text);
   border-radius: 10px;
   padding: 12px 16px;
   margin-bottom: 16px;
@@ -318,7 +318,7 @@ onMounted(async () => {
 
 .grafik-kart {
   background: white;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
@@ -331,12 +331,12 @@ onMounted(async () => {
 }
 
 .kenar-cizgisi {
-  stroke: #cbd5e1;
+  stroke: var(--color-border-input);
   transition: opacity 0.15s ease;
 }
 
 .kenar-cizgisi.kenar-halka {
-  stroke: #dc2626;
+  stroke: var(--color-danger);
 }
 
 .kenar-cizgisi.kenar-soluk {
@@ -353,18 +353,18 @@ onMounted(async () => {
 }
 
 .dugum-cember {
-  fill: #0d9488;
+  fill: var(--color-primary);
   stroke: white;
   stroke-width: 2;
 }
 
 .dugum-cember.dugum-halka {
-  fill: #dc2626;
+  fill: var(--color-danger);
 }
 
 .dugum-etiket {
   font-size: 11px;
-  fill: #334155;
+  fill: var(--color-text-strong);
   font-weight: 500;
 }
 </style>

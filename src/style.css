@@ -1,3 +1,52 @@
+/* Tasarim token'lari - projede tekrar eden renkler burada tek yerden
+   tanimlanir. Sadece iki veya daha fazla dosyada tekrarlanan renkler
+   tokenlestirildi; tek bir yerde kullanilan renkler (orn. Logo.vue'nun
+   marka rengi, DashboardGrafikleri.vue'nun canvas grafik renkleri) oldugu
+   gibi birakildi - canvas/SVG baglaminda CSS custom property calismaz,
+   CSS'te ise tek kullanimlik bir rengi tokenlestirmenin DRY acisindan
+   faydasi yok. */
+:root {
+  /* Marka */
+  --color-primary: #0d9488;
+  --color-primary-hover: #0f766e;
+  --color-secondary: #1e40af;
+
+  /* Metin */
+  --color-text: #0f172a;
+  --color-text-heading: #1e293b;
+  --color-text-strong: #334155;
+  --color-text-secondary: #475569;
+  --color-text-muted: #64748b;
+  --color-text-faint: #94a3b8;
+
+  /* Yuzeyler / kenarliklar */
+  --color-bg: #f7f9fb;
+  --color-surface-subtle: #f8fafc;
+  --color-surface-hover: #f1f5f9;
+  --color-border: #e2e8f0;
+  --color-border-input: #cbd5e1;
+
+  /* Durum: risk/tehlike (kirmizi) */
+  --color-danger: #dc2626;
+  --color-danger-text: #991b1b;
+  --color-danger-text-strong: #b91c1c;
+  --color-danger-bg: #fee2e2;
+  --color-danger-bg-subtle: #fef2f2;
+  --color-danger-badge-bg: #fecaca;
+
+  /* Durum: uyari (amber) */
+  --color-warning-text: #92400e;
+  --color-warning-bg: #fef3c7;
+
+  /* Durum: basari (yesil) */
+  --color-success-text: #166534;
+  --color-success-bg: #dcfce7;
+
+  /* Durum: bilgi (mavi) */
+  --color-info-text: #075985;
+  --color-info-bg: #e0f2fe;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -10,7 +59,7 @@ body {
     "Segoe UI",
     Roboto,
     sans-serif;
-  background-color: #f7f9fb;
+  background-color: var(--color-bg);
   color: #1a1a1a;
 }
 
@@ -22,7 +71,7 @@ body {
 
 .card {
   background: white;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   padding: 24px;
@@ -31,32 +80,32 @@ body {
 
 .card h2 {
   margin-top: 0;
-  color: #0f172a;
+  color: var(--color-text);
 }
 
 .navbar {
   background: white;
-  color: #0f172a;
+  color: var(--color-text);
   padding: 12px 28px;
   display: flex;
   align-items: center;
   gap: 20px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .navbar a {
-  color: #475569;
+  color: var(--color-text-secondary);
   text-decoration: none;
   margin-right: 20px;
   font-weight: 500;
 }
 
 .navbar a:hover {
-  color: #0f172a;
+  color: var(--color-text);
 }
 
 .btn {
-  background: #0d9488;
+  background: var(--color-primary);
   color: white;
   border: none;
   padding: 8px 16px;
@@ -67,19 +116,19 @@ body {
 }
 
 .btn:hover {
-  background: #0f766e;
+  background: var(--color-primary-hover);
 }
 
 .btn-cikis {
-  background: #64748b;
+  background: var(--color-text-muted);
 }
 
 .btn-cikis:hover {
-  background: #475569;
+  background: var(--color-text-secondary);
 }
 
 input {
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--color-border-input);
   border-radius: 6px;
   padding: 8px;
 }
@@ -93,29 +142,29 @@ th,
 td {
   padding: 12px 14px;
   text-align: left;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--color-border);
   font-size: 14px;
 }
 
 th {
-  background: #f8fafc;
+  background: var(--color-surface-subtle);
   font-weight: 600;
-  color: #475569;
+  color: var(--color-text-secondary);
   text-transform: uppercase;
   font-size: 12px;
   letter-spacing: 0.4px;
 }
 
 tbody tr:hover {
-  background-color: #f8fafc;
+  background-color: var(--color-surface-subtle);
 }
 
 tr.riskli {
-  background-color: #fef2f2;
+  background-color: var(--color-danger-bg-subtle);
 }
 
 tr.riskli:hover {
-  background-color: #fee2e2;
+  background-color: var(--color-danger-bg);
 }
 
 .badge {
@@ -127,18 +176,18 @@ tr.riskli:hover {
 }
 
 .badge-riskli {
-  background: #fecaca;
-  color: #991b1b;
+  background: var(--color-danger-badge-bg);
+  color: var(--color-danger-text);
 }
 
 .badge-normal {
-  background: #dcfce7;
-  color: #166534;
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
 }
 
 .hata-mesaj {
-  color: #b91c1c;
-  background: #fee2e2;
+  color: var(--color-danger-text-strong);
+  background: var(--color-danger-bg);
   padding: 10px;
   border-radius: 6px;
 }
@@ -152,7 +201,7 @@ tr.riskli:hover {
   width: 232px;
   flex-shrink: 0;
   background: white;
-  border-right: 1px solid #e2e8f0;
+  border-right: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
   padding: 22px 14px;
@@ -175,7 +224,7 @@ tr.riskli:hover {
   gap: 6px;
   margin-bottom: 26px;
   padding: 0 6px;
-  color: #0f172a;
+  color: var(--color-text);
 }
 
 .kenar-menu-daraltilmis .kenar-menu-baslik-satiri {
@@ -186,7 +235,7 @@ tr.riskli:hover {
   background: none;
   border: none;
   cursor: pointer;
-  color: #94a3b8;
+  color: var(--color-text-faint);
   padding: 5px;
   border-radius: 6px;
   display: flex;
@@ -196,8 +245,8 @@ tr.riskli:hover {
 }
 
 .kenar-menu-daralt-buton:hover {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: var(--color-surface-hover);
+  color: var(--color-text);
 }
 
 .kenar-menu-etiket {
@@ -205,7 +254,7 @@ tr.riskli:hover {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #94a3b8;
+  color: var(--color-text-faint);
   padding: 0 10px;
   margin: 4px 0 6px;
 }
@@ -226,7 +275,7 @@ tr.riskli:hover {
   gap: 10px;
   padding: 9px 10px;
   border-radius: 8px;
-  color: #475569;
+  color: var(--color-text-secondary);
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
@@ -237,13 +286,13 @@ tr.riskli:hover {
 }
 
 .kenar-menu-link:hover {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: var(--color-surface-hover);
+  color: var(--color-text);
 }
 
 .kenar-menu-link-aktif {
   background: #ecfdf5;
-  color: #0d9488;
+  color: var(--color-primary);
 }
 
 .kenar-menu-kullanici {
@@ -251,7 +300,7 @@ tr.riskli:hover {
   align-items: center;
   gap: 10px;
   padding: 12px 10px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--color-border);
   margin-top: 12px;
 }
 
@@ -263,14 +312,18 @@ tr.riskli:hover {
 }
 
 .kenar-menu-kullanici-link:hover {
-  background: #f1f5f9;
+  background: var(--color-surface-hover);
 }
 
 .kenar-menu-avatar {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #0d9488, #1e40af);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
   color: white;
   display: flex;
   align-items: center;
@@ -283,12 +336,12 @@ tr.riskli:hover {
 .kenar-menu-isim {
   font-size: 13px;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--color-text);
 }
 
 .kenar-menu-rol {
   font-size: 11px;
-  color: #94a3b8;
+  color: var(--color-text-faint);
 }
 
 .kenar-menu-cikis {

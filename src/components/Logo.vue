@@ -4,7 +4,7 @@
       <defs>
         <linearGradient id="fgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stop-color="#2dd4bf" />
-          <stop offset="100%" stop-color="#1e40af" />
+          <stop offset="100%" stop-color="var(--color-secondary)" />
         </linearGradient>
       </defs>
       <path
