@@ -174,11 +174,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import Sidebar from "../components/Sidebar.vue";
 import { useApi } from "../composables/useApi";
 import type { RiskAyarlari } from "../types";
 
 const { apiFetch } = useApi();
+const router = useRouter();
 const ayarlar = ref<RiskAyarlari | null>(null);
 const yukleniyor = ref(true);
 const kaydediliyor = ref(false);
@@ -188,6 +190,11 @@ const rol = localStorage.getItem("rol");
 
 async function kaydet() {
   if (!ayarlar.value) return;
+
+  if (!localStorage.getItem("rol")) {
+    router.push("/login");
+    return;
+  }
 
   kaydediliyor.value = true;
   hata.value = "";
