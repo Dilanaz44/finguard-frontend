@@ -117,7 +117,9 @@
                   @click="detayAcKapa(islem)"
                 >
                   <td class="hesap-no-hucre">{{ gonderenGoster(islem) }}</td>
-                  <td class="hesap-no-hucre">{{ aliciGoster(islem) }}</td>
+                  <td class="hesap-no-hucre">
+                    {{ aliciGoster(islem, hesapHaritasi) }}
+                  </td>
                   <td class="tutar-hucre">{{ formatTutar(islem.tutar) }}</td>
                   <td>{{ islem.paraBirimi }}</td>
                   <td>
@@ -310,287 +312,73 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { computed } from "vue";
+import { useRoute } from "vue-router";
 import Sidebar from "../components/Sidebar.vue";
 import MusteriBasligi from "../components/MusteriBasligi.vue";
 import IslemIstatistikleri from "../components/IslemIstatistikleri.vue";
-import { useApi } from "../composables/useApi";
-import type { Islem, Musteri, Hesap, Analist } from "../types";
+import { useKullaniciIslemleri } from "../composables/useKullaniciIslemleri";
+import { useIslemFiltreleri } from "../composables/useIslemFiltreleri";
+import { useKlavyeNavigasyonu } from "../composables/useKlavyeNavigasyonu";
+import {
+  formatTarih,
+  formatTutar,
+  gonderenGoster,
+  aliciGoster,
+} from "../utils/islemGoruntuleme";
 
-const { apiFetch } = useApi();
-const islemler = ref<Islem[]>([]);
-const sayfa = ref(1);
-const toplamSayfa = ref(1);
-const toplamKayit = ref(0);
-const musteri = ref<Musteri | null>(null);
-const analistler = ref<Analist[]>([]);
-const yeniNotMetni = ref<Record<number, string>>({});
-const notEkleniyor = ref<Record<number, boolean>>({});
-const hesapHaritasi = ref<Record<number, Hesap>>({});
-const yukleniyor = ref(true);
-const hata = ref("");
-const acikNedenId = ref<number | null>(null);
-const duzenlemeDurum = ref("yeni");
-const duzenlemeNot = ref("");
-const kaydediliyor = ref(false);
-const aramaMetni = ref("");
-const riskliFiltre = ref("hepsi");
-const hedefFiltre = ref("hepsi");
-const durumFiltre = ref("hepsi");
-const siralama = ref("tarih-yeni");
-const kaydetMesaji = ref<Record<number, string>>({});
 const route = useRoute();
-const router = useRouter();
-const kuyrukSekmeleri = computed(() => {
-  const sayilar = { yeni: 0, inceleniyor: 0, kapatildi: 0 };
-  islemler.value.forEach((islem) => {
-    const durum = islem.incelemeDurumu || "yeni";
-    if (durum in sayilar) {
-      sayilar[durum as keyof typeof sayilar]++;
-    }
-  });
+const musteriId = computed(() => String(route.params.id));
 
-  return [
-    { deger: "hepsi", etiket: "Tumu", sayi: islemler.value.length },
-    { deger: "yeni", etiket: "Bekleyen", sayi: sayilar.yeni },
-    { deger: "inceleniyor", etiket: "Inceleniyor", sayi: sayilar.inceleniyor },
-    { deger: "kapatildi", etiket: "Kapatildi", sayi: sayilar.kapatildi },
-  ];
-});
+const {
+  islemler,
+  sayfa,
+  toplamSayfa,
+  toplamKayit,
+  musteri,
+  analistler,
+  hesapHaritasi,
+  yukleniyor,
+  hata,
+  acikNedenId,
+  duzenlemeDurum,
+  duzenlemeNot,
+  kaydediliyor,
+  kaydetMesaji,
+  yeniNotMetni,
+  notEkleniyor,
+  oncekiSayfa,
+  sonrakiSayfa,
+  satiriAc,
+  detayAcKapa,
+  atamaGuncelle,
+  notEkle,
+  notKaydet,
+  sarTaslagiIndir,
+  csvIndir,
+} = useKullaniciIslemleri(musteriId);
 
-const filtrelenmisIslemler = computed(() => {
-  return islemler.value.filter((islem) => {
-    if (riskliFiltre.value === "evet" && !islem.riskli) return false;
-    if (riskliFiltre.value === "hayir" && islem.riskli) return false;
-    if (hedefFiltre.value !== "hepsi" && islem.hedefUlke !== hedefFiltre.value)
-      return false;
-    if (
-      durumFiltre.value !== "hepsi" &&
-      islem.incelemeDurumu !== durumFiltre.value
-    )
-      return false;
+const {
+  aramaMetni,
+  riskliFiltre,
+  hedefFiltre,
+  durumFiltre,
+  siralama,
+  kuyrukSekmeleri,
+  siraliIslemler,
+} = useIslemFiltreleri(islemler);
 
-    const arama = aramaMetni.value.trim().toLowerCase();
-    if (arama) {
-      if (arama.startsWith("#")) {
-        // Basinda # varsa hesap numarasinin son hanelerinde ara (ekranda gorunen kisim).
-        const aranilan = arama.slice(1);
-        const hesapNo = islem.hesap?.hesapNumarasi || String(islem.hesapId);
-        if (!hesapNo.toLowerCase().includes(aranilan)) return false;
-      } else {
-        // Duz sayi yazildiysa sadece tutarda ara.
-        if (!String(islem.tutar).includes(arama)) return false;
-      }
-    }
-
-    return true;
-  });
-});
-
-const siraliIslemler = computed(() => {
-  const liste = [...filtrelenmisIslemler.value];
-
-  if (siralama.value === "risk-yuksek") {
-    liste.sort((a, b) => (b.riskSkoru || 0) - (a.riskSkoru || 0));
-  } else if (siralama.value === "tutar-yuksek") {
-    liste.sort((a, b) => Number(b.tutar) - Number(a.tutar));
-  } else {
-    liste.sort(
-      (a, b) =>
-        new Date(b.olusturmaTarihi).getTime() -
-        new Date(a.olusturmaTarihi).getTime(),
-    );
-  }
-
-  return liste;
-});
-
-function detayAcKapa(islem: Islem) {
-  if (acikNedenId.value === islem.id) {
-    acikNedenId.value = null;
-    return;
-  }
-  satiriAc(islem);
-}
-
-function satiriAc(islem: Islem) {
-  acikNedenId.value = islem.id;
-  duzenlemeDurum.value = islem.incelemeDurumu || "yeni";
-  duzenlemeNot.value = islem.analistNotu || "";
-}
-
-// Klavye kisayollari: asagi/yukari ok tuslariyla islemler arasinda gezinme.
-// Analist fareyle tek tek tiklamak yerine listede hizlica ilerleyebilir.
-function klavyeDinleyici(e: KeyboardEvent) {
-  const hedef = e.target as HTMLElement;
-  const yaziYaziliyor = ["INPUT", "TEXTAREA", "SELECT"].includes(hedef.tagName);
-
-  // Cmd/Ctrl+Enter: not yazarken (textarea icindeyken) bile calissin, hizlica kaydetsin.
-  if (
-    e.key === "Enter" &&
-    (e.metaKey || e.ctrlKey) &&
-    acikNedenId.value !== null
-  ) {
-    e.preventDefault();
-    const acikIslem = siraliIslemler.value.find(
-      (i) => i.id === acikNedenId.value,
-    );
-    if (acikIslem) notKaydet(acikIslem);
-    return;
-  }
-
-  if (yaziYaziliyor) return; // arama kutusunda/notta yazarken diger kisayollari devre disi birak
-
-  const liste = siraliIslemler.value;
-  if (liste.length === 0) return;
-
-  const suankiIndex = liste.findIndex((i) => i.id === acikNedenId.value);
-
-  if (e.key === "ArrowDown") {
-    e.preventDefault();
-    const sonrakiIndex =
-      suankiIndex === -1 ? 0 : Math.min(suankiIndex + 1, liste.length - 1);
-    satiriAc(liste[sonrakiIndex]!);
-  } else if (e.key === "ArrowUp") {
-    e.preventDefault();
-    const oncekiIndex = suankiIndex === -1 ? 0 : Math.max(suankiIndex - 1, 0);
-    satiriAc(liste[oncekiIndex]!);
-  } else if (e.key === "Enter" && acikNedenId.value !== null) {
-    e.preventDefault();
-    const acikIslem = liste.find((i) => i.id === acikNedenId.value);
-    if (acikIslem) notKaydet(acikIslem);
-  }
-}
-
-onMounted(() => {
-  window.addEventListener("keydown", klavyeDinleyici);
-});
-
-onUnmounted(() => {
-  window.removeEventListener("keydown", klavyeDinleyici);
+useKlavyeNavigasyonu({
+  liste: siraliIslemler,
+  acikId: acikNedenId,
+  satiriAc,
+  kaydet: notKaydet,
 });
 
 function durumEtiketMetni(durum: string) {
   if (durum === "inceleniyor") return "Inceleniyor";
   if (durum === "kapatildi") return "Kapatildi";
   return "Yeni";
-}
-
-async function atamaGuncelle(islem: Islem, secilenDeger: string) {
-  if (!localStorage.getItem("rol")) {
-    router.push("/login");
-    return;
-  }
-
-  const analistId = secilenDeger === "" ? null : Number(secilenDeger);
-
-  try {
-    const response = await apiFetch(`/islemler/${islem.id}/ata`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ analistId }),
-    });
-
-    if (!response.ok) {
-      hata.value = "Atama guncellenemedi";
-      return;
-    }
-
-    const guncellenenIslem = await response.json();
-    const index = islemler.value.findIndex((i) => i.id === islem.id);
-    if (index !== -1) {
-      islemler.value[index] = { ...islemler.value[index], ...guncellenenIslem };
-    }
-  } catch {
-    hata.value = "Sunucuya baglanilamadi";
-  }
-}
-
-async function notEkle(islem: Islem) {
-  const metin = (yeniNotMetni.value[islem.id] || "").trim();
-  if (!metin) return;
-
-  if (!localStorage.getItem("rol")) {
-    router.push("/login");
-    return;
-  }
-
-  notEkleniyor.value[islem.id] = true;
-
-  try {
-    const response = await apiFetch(`/islemler/${islem.id}/notlar`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ not: metin }),
-    });
-
-    if (!response.ok) {
-      hata.value = "Not eklenemedi";
-      return;
-    }
-
-    const yeniNot = await response.json();
-    const index = islemler.value.findIndex((i) => i.id === islem.id);
-    if (index !== -1) {
-      const guncelNotlar = [yeniNot, ...(islemler.value[index]!.notlar || [])];
-      islemler.value[index] = {
-        ...islemler.value[index]!,
-        notlar: guncelNotlar,
-      };
-    }
-    yeniNotMetni.value[islem.id] = "";
-  } catch {
-    hata.value = "Sunucuya baglanilamadi";
-  } finally {
-    delete notEkleniyor.value[islem.id];
-  }
-}
-
-function formatTarih(tarih: string | null) {
-  if (!tarih) return "";
-  return new Date(tarih).toLocaleString("tr-TR");
-}
-
-async function notKaydet(islem: Islem) {
-  if (!localStorage.getItem("rol")) {
-    router.push("/login");
-    return;
-  }
-
-  kaydediliyor.value = true;
-
-  try {
-    const response = await apiFetch(`/islemler/${islem.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        incelemeDurumu: duzenlemeDurum.value,
-        analistNotu: duzenlemeNot.value,
-      }),
-    });
-
-    if (!response.ok) {
-      hata.value = "Inceleme kaydedilemedi";
-      return;
-    }
-
-    const guncellenenIslem = await response.json();
-
-    const index = islemler.value.findIndex((i) => i.id === islem.id);
-    if (index !== -1) {
-      islemler.value[index] = { ...islemler.value[index], ...guncellenenIslem };
-    }
-
-    kaydetMesaji.value[islem.id] = "Kaydedildi ✓";
-    setTimeout(() => {
-      delete kaydetMesaji.value[islem.id];
-    }, 3000);
-  } catch {
-    hata.value = "Sunucuya baglanilamadi";
-  } finally {
-    kaydediliyor.value = false;
-  }
 }
 
 // Gercek toplam (tum sayfalar) - API'nin toplamKayit alanindan. Diger 3 istatistik
@@ -614,150 +402,6 @@ const ortalamaRisk = computed(() => {
   );
   return (toplam / sayfadakiIslemSayisi.value).toFixed(1);
 });
-
-function formatTutar(tutar: string | number) {
-  return Number(tutar).toLocaleString("tr-TR", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-}
-
-function numarayiMaskele(numara: string | null | undefined, yedekId: number) {
-  if (!numara) {
-    // Eski hesap (hesap numarasi ozelligi eklenmeden once acilmis), eski gosterime don.
-    return `#${yedekId}`;
-  }
-  // TR330006400000112345678901 -> TR33 **** **** **** 8901
-  const basi = numara.slice(0, 4);
-  const sonu = numara.slice(-4);
-  return `${basi} **** **** **** ${sonu}`;
-}
-
-function gonderenGoster(islem: Islem) {
-  const ad = islem.hesap?.musteri?.adSoyad || "Bilinmiyor";
-  const numara = numarayiMaskele(islem.hesap?.hesapNumarasi, islem.hesapId);
-  return `${ad} (${numara})`;
-}
-
-function aliciGoster(islem: Islem) {
-  if (!islem.aliciHesapId) return "-";
-
-  const aliciHesap = hesapHaritasi.value[islem.aliciHesapId];
-  if (!aliciHesap) return `#${islem.aliciHesapId}`;
-
-  const ad = aliciHesap.musteri?.adSoyad || "Bilinmiyor";
-  const numara = numarayiMaskele(aliciHesap.hesapNumarasi, islem.aliciHesapId);
-  return `${ad} (${numara})`;
-}
-
-async function sarTaslagiIndir(islem: Islem) {
-  try {
-    const response = await apiFetch(`/islemler/${islem.id}/sar-taslagi`);
-
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `sar-taslak-${islem.id}.txt`;
-    link.click();
-    URL.revokeObjectURL(url);
-  } catch {
-    hata.value = "SAR taslagi indirilemedi";
-  }
-}
-async function csvIndir() {
-  const musteriId = route.params.id;
-
-  try {
-    const response = await apiFetch(
-      `/islemler/export?musteriId=${musteriId}`,
-    );
-
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `islemler-${musteriId}.csv`;
-    link.click();
-    URL.revokeObjectURL(url);
-  } catch {
-    hata.value = "CSV indirilemedi";
-  }
-}
-
-async function verileriYukle() {
-  yukleniyor.value = true;
-  hata.value = "";
-
-  const musteriId = route.params.id;
-
-  try {
-    const [musterilerRes, islemlerRes, hesaplarRes, analistlerRes] =
-      await Promise.all([
-        apiFetch("/musteriler"),
-        apiFetch(
-          `/islemler?musteriId=${musteriId}&sayfa=${sayfa.value}&limit=20`,
-        ),
-        apiFetch("/hesaplar"),
-        apiFetch("/analistler"),
-      ]);
-
-    if (
-      !musterilerRes.ok ||
-      !islemlerRes.ok ||
-      !hesaplarRes.ok ||
-      !analistlerRes.ok
-    ) {
-      hata.value = "Veriler yuklenemedi";
-      yukleniyor.value = false;
-      return;
-    }
-
-    const musteriler = await musterilerRes.json();
-    musteri.value = musteriler.find(
-      (m: Musteri) => String(m.id) === String(musteriId),
-    );
-
-    const islemlerYaniti = await islemlerRes.json();
-    islemler.value = islemlerYaniti.veri;
-    toplamSayfa.value = islemlerYaniti.toplamSayfa;
-    toplamKayit.value = islemlerYaniti.toplamKayit;
-
-    const hesaplar = await hesaplarRes.json();
-    const harita: Record<number, Hesap> = {};
-    hesaplar.forEach((h: Hesap) => {
-      harita[h.id] = h;
-    });
-    hesapHaritasi.value = harita;
-
-    analistler.value = await analistlerRes.json();
-  } catch {
-    hata.value = "Sunucuya baglanilamadi";
-  } finally {
-    yukleniyor.value = false;
-  }
-}
-
-function oncekiSayfa() {
-  if (sayfa.value <= 1) return;
-  sayfa.value -= 1;
-  verileriYukle();
-}
-
-function sonrakiSayfa() {
-  if (sayfa.value >= toplamSayfa.value) return;
-  sayfa.value += 1;
-  verileriYukle();
-}
-
-onMounted(verileriYukle);
-watch(
-  () => route.params.id,
-  () => {
-    sayfa.value = 1;
-    verileriYukle();
-  },
-);
 </script>
 
 <style scoped>
