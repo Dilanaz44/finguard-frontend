@@ -5,7 +5,7 @@
 
       <h2>Analist Girisi</h2>
 
-      <form @submit.prevent="girisYap">
+      <form v-if="asama === 'sifre'" @submit.prevent="girisYap">
         <div class="input-grubu">
           <label for="email-input" class="sr-only">Email</label>
           <input
@@ -63,7 +63,31 @@
         <button type="submit" class="giris-butonu">GIRIS YAP</button>
         <p v-if="hata" class="hata-mesaj">{{ hata }}</p>
       </form>
-      <router-link to="/sifremi-unuttum" class="unuttum-linki"
+
+      <form v-else @submit.prevent="ikiFAKoduGonder">
+        <p class="asama-aciklama">
+          Authenticator uygulamandaki 6 haneli kodu gir.
+        </p>
+        <div class="input-grubu">
+          <label for="kod-input" class="sr-only">Dogrulama kodu</label>
+          <input
+            id="kod-input"
+            v-model="kod"
+            type="text"
+            inputmode="numeric"
+            maxlength="6"
+            placeholder="123456"
+            required
+          />
+        </div>
+        <button type="submit" class="giris-butonu">DOGRULA</button>
+        <p v-if="hata" class="hata-mesaj">{{ hata }}</p>
+      </form>
+
+      <router-link
+        v-if="asama === 'sifre'"
+        to="/sifremi-unuttum"
+        class="unuttum-linki"
         >Sifremi Unuttum</router-link
       >
 
@@ -101,6 +125,20 @@ const hata = ref("");
 const sifreGoster = ref(false);
 const router = useRouter();
 
+// Sifre dogruysa ama 2FA acikken backend asil oturumu hemen acmiyor,
+// { ikiAsamaliGirisGerekli: true } donuyor - o zaman "kod" asamasina geciyoruz.
+const asama = ref<"sifre" | "kod">("sifre");
+const kod = ref("");
+
+// Sifre ya da 2FA kodu dogrulandiktan sonra ikisinin de yaptigi ortak is:
+// arayuzun ihtiyac duydugu (hassas olmayan) bilgileri sakla, ana sayfaya git.
+function oturumuTamamla(veri: { rol: string; adSoyad: string; id: number }) {
+  localStorage.setItem("rol", veri.rol);
+  localStorage.setItem("adSoyad", veri.adSoyad);
+  localStorage.setItem("analistId", String(veri.id));
+  router.push("/");
+}
+
 async function girisYap() {
   hata.value = "";
   try {
@@ -118,12 +156,35 @@ async function girisYap() {
       return;
     }
 
-    // Token artik httpOnly cookie'de (JS erisemiyor, gormiyoruz bile) - burada
-    // sadece arayuzun ihtiyac duydugu, hassas olmayan bilgileri saklıyoruz.
-    localStorage.setItem("rol", veri.rol);
-    localStorage.setItem("adSoyad", veri.adSoyad);
-    localStorage.setItem("analistId", String(veri.id));
-    router.push("/");
+    if (veri.ikiAsamaliGirisGerekli) {
+      asama.value = "kod";
+      return;
+    }
+
+    oturumuTamamla(veri);
+  } catch {
+    hata.value = "Sunucuya baglanilamadi";
+  }
+}
+
+async function ikiFAKoduGonder() {
+  hata.value = "";
+  try {
+    const response = await fetch(`${API_URL}/2fa/giris-dogrula`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ kod: kod.value }),
+    });
+
+    const veri = await response.json();
+
+    if (!response.ok) {
+      hata.value = veri.mesaj || "Kod hatali";
+      return;
+    }
+
+    oturumuTamamla(veri);
   } catch {
     hata.value = "Sunucuya baglanilamadi";
   }
@@ -276,6 +337,12 @@ async function girisYap() {
   border-top: 1px solid var(--color-surface-hover);
   font-size: 12px;
   color: var(--color-text-faint);
+}
+
+.asama-aciklama {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-bottom: 14px;
 }
 
 .sr-only {
