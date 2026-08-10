@@ -167,6 +167,38 @@
             }}</span>
           </form>
         </div>
+
+        <div v-if="rol === 'kidemli_analist'" class="card">
+          <h2>Analist 2FA Sifirlama</h2>
+          <p class="ayar-aciklama">
+            Cihazini kaybetmis/hesabina giremeyen bir analistin 2FA'sini
+            sifirlar - analist sifresiyle tekrar giris yapip 2FA'yi bastan
+            kurabilir.
+          </p>
+
+          <div class="ayar-satiri">
+            <label>Analist</label>
+            <select v-model.number="secilenAnalistId">
+              <option :value="null" disabled>Analist secin</option>
+              <option v-for="a in analistler" :key="a.id" :value="a.id">
+                {{ a.adSoyad }}
+              </option>
+            </select>
+          </div>
+
+          <button
+            type="button"
+            class="btn btn-kaydet"
+            :disabled="!secilenAnalistId || sifirlamaYukleniyor"
+            @click="ikiFASifirla"
+          >
+            {{ sifirlamaYukleniyor ? "Sifirlaniyor..." : "2FA'yi Sifirla" }}
+          </button>
+          <p v-if="sifirlamaMesaji" class="kaydet-onay">
+            {{ sifirlamaMesaji }}
+          </p>
+          <p v-if="sifirlamaHata" class="hata-mesaj">{{ sifirlamaHata }}</p>
+        </div>
       </div>
     </main>
   </div>
@@ -187,6 +219,53 @@ const kaydediliyor = ref(false);
 const hata = ref("");
 const kaydetMesaji = ref("");
 const rol = localStorage.getItem("rol");
+
+interface AnalistOzet {
+  id: number;
+  adSoyad: string;
+  rol: string;
+}
+const analistler = ref<AnalistOzet[]>([]);
+const secilenAnalistId = ref<number | null>(null);
+const sifirlamaYukleniyor = ref(false);
+const sifirlamaMesaji = ref("");
+const sifirlamaHata = ref("");
+
+async function ikiFASifirla() {
+  if (!secilenAnalistId.value) return;
+
+  if (!localStorage.getItem("rol")) {
+    router.push("/login");
+    return;
+  }
+
+  sifirlamaYukleniyor.value = true;
+  sifirlamaMesaji.value = "";
+  sifirlamaHata.value = "";
+
+  try {
+    const response = await apiFetch(
+      `/analistler/${secilenAnalistId.value}/2fa-sifirla`,
+      { method: "POST" },
+    );
+
+    const govde = await response.json();
+
+    if (!response.ok) {
+      sifirlamaHata.value = govde.mesaj || "2FA sifirlanamadi";
+      return;
+    }
+
+    sifirlamaMesaji.value = "2FA sifirlandi ✓";
+    setTimeout(() => {
+      sifirlamaMesaji.value = "";
+    }, 3000);
+  } catch {
+    sifirlamaHata.value = "Sunucuya baglanilamadi";
+  } finally {
+    sifirlamaYukleniyor.value = false;
+  }
+}
 
 async function kaydet() {
   if (!ayarlar.value) return;
@@ -244,6 +323,16 @@ onMounted(async () => {
     hata.value = "Sunucuya baglanilamadi";
   } finally {
     yukleniyor.value = false;
+  }
+
+  try {
+    const analistResponse = await apiFetch("/analistler");
+    if (analistResponse.ok) {
+      analistler.value = await analistResponse.json();
+    }
+  } catch {
+    // Analist listesi yuklenemezse sadece dropdown bos kalir, sayfanin
+    // geri kalani (risk ayarlari) etkilenmez.
   }
 });
 </script>
