@@ -10,7 +10,7 @@
         <MusteriBasligi v-model:musteri="musteri" @hata="hata = $event">
           <template #aksiyon>
             <button
-              v-if="!yukleniyor && islemler.length > 0"
+              v-if="!yukleniyor && islemler.length > 0 && rol === 'kidemli_analist'"
               class="btn"
               @click="csvIndir"
             >
@@ -242,6 +242,7 @@
                         {{ kaydediliyor ? "Kaydediliyor..." : "Kaydet" }}
                       </button>
                       <button
+                        v-if="rol === 'kidemli_analist'"
                         class="btn btn-kaydet"
                         @click.stop="sarTaslagiIndir(islem)"
                       >
@@ -329,6 +330,7 @@ import {
 
 const route = useRoute();
 const musteriId = computed(() => String(route.params.id));
+const rol = localStorage.getItem("rol");
 
 const {
   islemler,

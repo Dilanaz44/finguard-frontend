@@ -230,6 +230,11 @@ export function useKullaniciIslemleri(musteriId: Ref<string>) {
     try {
       const response = await apiFetch(`/islemler/${islem.id}/sar-taslagi`);
 
+      if (!response.ok) {
+        hata.value = "SAR taslagi indirilemedi";
+        return;
+      }
+
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -247,6 +252,11 @@ export function useKullaniciIslemleri(musteriId: Ref<string>) {
       const response = await apiFetch(
         `/islemler/export?musteriId=${musteriId.value}`,
       );
+
+      if (!response.ok) {
+        hata.value = "CSV indirilemedi";
+        return;
+      }
 
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
